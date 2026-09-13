@@ -99,7 +99,7 @@ CI Chromium 验证之后，还需在用户实际使用的 Chrome Stable 中加�
 
 ## 7. 当前状态
 
-截至 2026-09-13 v0.3.0：
+截至 2026-09-13 v0.3.1：
 
 - TypeScript 类型检查、单元测试、Manifest V3 构建、依赖审计均通过。
 - Playwright Chromium 扩展/视觉 E2E 为 5/5，通过本地 `file://` 阅读、Workspace、高级图表、HTML/DOCX/EPUB 导出、大文档虚拟化和视觉基线验证。
@@ -109,6 +109,8 @@ CI Chromium 验证之后，还需在用户实际使用的 Chrome Stable 中加�
 - 本地智能搜索使用路径/标题加权与 TF-IDF/CJK bigram，不依赖在线模型。
 - CI 配置 Ubuntu/macOS/Windows 构建矩阵、Ubuntu Chromium 功能 E2E 与 macOS 视觉回归。
 - Chrome Web Store V2 的上传/提交审核脚本和 GitHub Actions 已完成；首次 Store item 因官方 API 限制仍需 Developer Dashboard 一次性创建。
+- 新增统一 `npm run verify` / `npm run verify:full`，串联 Typecheck、Lint、逐文件 Coverage、安全回归、功能 E2E、Accessibility、Visual、Performance、Release 包审计与依赖审计。
+- `quality/quality-report.json` 作为 AI/Agent 可直接消费的机器报告，生成目录不进入 Git。
 
 研究工具和发布状态见 [交付状态](delivery-status.md)。
 

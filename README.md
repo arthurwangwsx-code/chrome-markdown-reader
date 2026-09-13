@@ -2,7 +2,7 @@
 
 面向本地技术文档的独立 Chrome Markdown 阅读扩展。
 
-> 当前阶段：v0.3.0 已完成大文档渐进渲染、EPUB/高保真 DOCX、本地智能搜索、视觉回归和 Chrome Web Store V2 自动化准备。项目以个人学习和公开源码为目标，按“能力优先、可验证、可维护”的方向持续演进。
+> 当前阶段：v0.3.1 在 v0.3.0 功能基线上补齐 AI Quality Loop：逐文件 coverage、安全回归、Accessibility、视觉回归、性能预算、Release 包审计、统一 `verify` / `verify:full` 和机器可读质量报告。项目以个人学习和公开源码为目标，按“能力优先、可验证、可维护”的方向持续演进。
 
 ## 已实现能力
 
@@ -27,6 +27,8 @@ npm run check
 npm run test:e2e
 npm run benchmark
 npm run package
+npm run verify
+npm run verify:full
 npm run store:assets
 ```
 
@@ -54,6 +56,7 @@ file:///absolute/path/to/document.md
 - [当前交付状态](docs/delivery-status.md)
 - [实现状态](docs/implementation-status-2026-09-13.md)
 - [性能基准](docs/performance-2026-09-13.md)
+- [AI Quality Loop](docs/quality-loop.md)
 - [Chrome Web Store 发布](docs/chrome-web-store.md)
 - [Chrome Web Store Listing 草案](docs/store-listing.md)
 - [参考工程说明](参考工程/README.md)

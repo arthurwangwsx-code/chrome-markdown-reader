@@ -28,3 +28,11 @@ feature as complete until its build/tests pass.
 - The intended final product is public and open source. Publishing still happens only
   after the product is buildable and the repository is ready for public consumption.
 - Validate changes in bounded batches; do not interrupt unrelated machine processes.
+
+## Quality loop for agents
+
+- Read `docs/quality-loop.md` before substantial implementation or refactoring.
+- Run the smallest affected test first, then `npm run verify` before treating a change as complete.
+- Run `npm run verify:full` before releases and after Markdown-core, virtualization, diagram-performance, or large-document changes.
+- `quality/quality-report.json` is the machine-readable result for agents. Do not commit generated quality/coverage output.
+- Never make a failing gate green by deleting the test, weakening sanitization, broadening permissions, or silently raising a performance budget.

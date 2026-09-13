@@ -47,8 +47,20 @@
 - v0.3.0 GitHub CI run `34750053314` 已全部成功：Windows / Ubuntu / macOS 构建打包审计、Chromium 功能 E2E 和 macOS 视觉回归全部 PASS。
 - v0.3.0 已发布：`https://github.com/arthurwangwsx-code/chrome-markdown-reader/releases/tag/v0.3.0`；正式 ZIP SHA-256 为 `b0e2382ef0ef65c0e1ef23657ce583ea4cb6e75b7425617f1cd56a6d34198e39`。
 
+### v0.3.1：AI Quality Loop
+
+- 新增 ESLint 门禁，禁止 eval/debugger 等高风险回归并约束未使用变量。
+- 新增 Vitest + V8 coverage；纯逻辑核心按逐文件阈值约束。当前总体约：statements 68.54%、branches 76.92%、functions 63.15%、lines 73.13%。
+- 新增独立 security regression：script/iframe/event handler、javascript URL、远程 chart reference、图表源码注入、heading/math、unknown code fence。
+- 新增 axe Accessibility E2E，并修复 `file://` 阅读页缺少 document title / html lang 的真实问题；严重/关键 axe violation 为 0。
+- 新增页面内键盘 Tab 顺序验证。
+- 新增性能预算门禁与 `quality/benchmark.json`；最终本机 full verify：1MB article 中位数约 1.03s，11MB 约 1.91s，100 Mermaid settled 约 2.12s。
+- 新增 Release ZIP 白名单/权限审计，拒绝测试、coverage、quality、参考工程、私钥、日志、sourcemap、node_modules 和过宽权限进入发行包。
+- 新增 `npm run verify` / `npm run verify:full` 和 `quality/quality-report.json`，供 AI/Agent 自动判断可提交性。
+- Stryker mutation testing 做过真实评估，但当前 Vitest runner 在本仓库上出现 mutants 全部误报 Survived 的失真行为；结合 2026 年仍开放的 upstream runner/static mutant 问题，本轮不把 mutation score 纳入质量门禁。
+
 ## 剩余外部前置与长期增强
 
-v0.3.0 已完成此前第三阶段核心项目。唯一尚不能由仓库代码独立完成的是首次 Chrome Web Store item 创建：官方 V2 API 不支持创建新 item，需要开发者在 Dashboard 一次性创建条目并提供 OAuth、Publisher ID 与 Extension ID；完成后后续版本可以走仓库的自动上传/提交审核流程。
+v0.3.0 已完成此前第三阶段核心项目，v0.3.1 将测试体系提升为可持续 AI 自测/自修基线。唯一尚不能由仓库代码独立完成的是首次 Chrome Web Store item 创建：官方 V2 API 不支持创建新 item，需要开发者在 Dashboard 一次性创建条目并提供 OAuth、Publisher ID 与 Extension ID；完成后后续版本可以走仓库的自动上传/提交审核流程。
 
 长期增强已不属于本阶段阻塞项：更精细的大文档调度、更多出版格式兼容测试、商店正式审核后的运营素材迭代。

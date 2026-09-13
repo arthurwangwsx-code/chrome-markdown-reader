@@ -22,12 +22,18 @@
 | 工作区 `sync` / `context` | 已登记 `web-chrome-markdown-reader`，工作区索引为 97 个项目；参考检出未被重复登记为产品 |
 | 工作区 `doctor` | 注册表结构健康；仍有其他工程的治理告警，例如缺少 AGENTS.md，本次未改动无关工程 |
 | `npm run typecheck` | PASS |
-| `npm test` | PASS |
+| `npm run lint` | PASS |
+| `npm test` | PASS；Unit/Security 共 15 个测试用例 |
+| `npm run test:coverage` | PASS；逐文件阈值；当前总体 statements 68.54%、branches 76.92%、functions 63.15%、lines 73.13% |
 | `npm run build` | PASS；Manifest V3 构建成功 |
-| `npm run test:e2e` | PASS 5/5；真实 Chromium 扩展加载、本地 `file://` 多图表、高级图表、HTML/DOCX/EPUB、大文档虚拟化与视觉回归 |
+| `npm run test:e2e:functional` | PASS 4/4；真实 Chromium 扩展加载、本地 `file://` 多图表、高级图表、HTML/DOCX/EPUB 与大文档虚拟化 |
+| `npm run test:a11y` | PASS 2/2；axe serious/critical 为 0，页面内键盘 Tab 顺序通过 |
+| `npm run test:visual` | PASS 1/1；固定 1280×900 阅读器视觉基线 |
 | `npm audit` | 0 vulnerabilities |
-| `npm run benchmark` | PASS；每场景 3 次；11MB article 中位数约 1.86 秒，100 Mermaid 正文中位数约 0.16 秒，1MB 压力样例波动如实记录 |
-| `npm run package` | PASS；正式 v0.3.0 ZIP SHA-256 `b0e2382ef0ef65c0e1ef23657ce583ea4cb6e75b7425617f1cd56a6d34198e39` |
+| `npm run test:performance` | PASS；最终 full verify 中位数：1MB article 约 1.03s、11MB 约 1.91s、100 Mermaid settled 约 2.12s |
+| `npm run check:release` | PASS；Manifest、版本、权限与发行包泄漏检查通过 |
+| `npm run verify:full` | PASS；12 个质量步骤全部通过并输出 `quality/quality-report.json` |
+| `npm run package` | PASS；v0.3.1 ZIP 已可构建，正式 Release SHA 待远端 CI 全绿后记录 |
 | GitHub CI | PASS：run `34750053314`；Windows / Ubuntu / macOS 构建/打包/审计、Ubuntu Chromium 功能 E2E、macOS 视觉回归全部成功 |
 | GitHub Release | v0.3.0 已正式发布：`https://github.com/arthurwangwsx-code/chrome-markdown-reader/releases/tag/v0.3.0`，包含 Chrome ZIP 与 SHA-256 |
 
@@ -43,6 +49,6 @@
 
 ## 下一阶段的直接入口
 
-当前核心、第二阶段和第三阶段代码链路均已通过并发布为 v0.3.0。Web Store 真正上架只剩官方要求的一次性 Dashboard item/OAuth 外部配置；仓库侧上传、状态查询和提交审核自动化已就绪。
+当前核心、第二阶段和第三阶段代码链路均已通过；v0.3.1 进一步把质量验证固化为 AI 可执行闭环。Web Store 真正上架只剩官方要求的一次性 Dashboard item/OAuth 外部配置；仓库侧上传、状态查询和提交审核自动化已就绪。
 
 本轮目标已明确为最终公开源码，因此实现与文档将整理为 Git 提交并进入公有仓库。
