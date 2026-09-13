@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "repositories": [
+    {"directory": "docu-md", "repo": "markdown-viewer/markdown-viewer-extension", "role": "rich-rendering-primary-candidate"},
+    {"directory": "simov-markdown-viewer", "repo": "simov/markdown-viewer", "role": "local-url-and-permission-reference"},
+    {"directory": "readmd", "repo": "DavidLiuXh/readmd", "role": "folder-tree-and-reader-ux-reference"},
+    {"directory": "markdown-preview-plus", "repo": "volca/markdown-preview", "role": "lightweight-comparison"},
+    {"directory": "markdown-preview-enhanced", "repo": "shd101wyy/vscode-markdown-preview-enhanced", "role": "advanced-preview-feature-reference"},
+    {"directory": "crossnote", "repo": "shd101wyy/crossnote", "role": "advanced-rendering-architecture-reference"}
+  ]
+}

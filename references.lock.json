@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "verifiedOn": "2026-09-13",
+  "timezone": "Asia/Kuala_Lumpur",
+  "note": "Revisions were read from actual local Git checkouts. License conclusions use source files, not GitHub API classification alone. Stars are a point-in-time snapshot, not quality scores.",
+  "repositories": [
+    {
+      "directory": "docu-md",
+      "repo": "markdown-viewer/markdown-viewer-extension",
+      "commit": "109fcfc7cb197bbab5b0517485ab7cd3934f13e5",
+      "commitDate": "2026-09-10T04:01:03+08:00",
+      "defaultBranch": "main",
+      "versionInSource": "5.3.0",
+      "starsSnapshot": 1816,
+      "license": "GPL-3.0-only",
+      "licenseEvidence": ["package.json", "LICENSE"],
+      "githubLicenseClassification": "NOASSERTION"
+    },
+    {
+      "directory": "simov-markdown-viewer",
+      "repo": "simov/markdown-viewer",
+      "commit": "ccf738f6af3f903fe8155a01e91084b27252511f",
+      "commitDate": "2024-04-30T18:06:31+03:00",
+      "defaultBranch": "main",
+      "versionInSource": "5.3",
+      "starsSnapshot": 1679,
+      "license": "MIT",
+      "licenseEvidence": ["LICENSE"],
+      "githubLicenseClassification": "MIT"
+    },
+    {
+      "directory": "readmd",
+      "repo": "DavidLiuXh/readmd",
+      "commit": "4e356b7859c270452e6a7c44970f28c0dfcaba56",
+      "commitDate": "2026-06-18T17:18:35+08:00",
+      "defaultBranch": "main",
+      "versionInSource": "0.0.0",
+      "starsSnapshot": 0,
+      "license": "UNCONFIRMED",
+      "licenseEvidence": ["README.md claims MIT; no standalone LICENSE found in the checked-out root"],
+      "githubLicenseClassification": null,
+      "reusePolicy": "UX and architecture study only; do not copy source until permission is resolved"
+    },
+    {
+      "directory": "markdown-preview-plus",
+      "repo": "volca/markdown-preview",
+      "commit": "c94f45f2fe4bc168893e08ab8a137ebbb1405da8",
+      "commitDate": "2026-06-08T10:03:13+08:00",
+      "defaultBranch": "master",
+      "versionInSource": "0.8.16",
+      "starsSnapshot": 252,
+      "license": "MIT",
+      "licenseEvidence": ["LICENSE"],
+      "githubLicenseClassification": "MIT"
+    },
+    {
+      "directory": "markdown-preview-enhanced",
+      "repo": "shd101wyy/vscode-markdown-preview-enhanced",
+      "commit": "babc261a75d65cdae595f8ac6e136b81fa853603",
+      "commitDate": "2026-09-08T21:14:21+08:00",
+      "defaultBranch": "develop",
+      "versionInSource": "0.8.35",
+      "starsSnapshot": 2074,
+      "license": "NCSA",
+      "licenseEvidence": ["package.json", "LICENSE.md"],
+      "githubLicenseClassification": "NOASSERTION"
+    },
+    {
+      "directory": "crossnote",
+      "repo": "shd101wyy/crossnote",
+      "commit": "fa7a37d555312b3d6ae46c6e6f9d7bfd81e2b685",
+      "commitDate": "2026-09-12T23:55:24+08:00",
+      "defaultBranch": "develop",
+      "versionInSource": "0.9.35",
+      "starsSnapshot": 564,
+      "license": "NCSA",
+      "licenseEvidence": ["package.json", "LICENSE.md"],
+      "githubLicenseClassification": "NOASSERTION"
+    }
+  ]
+}

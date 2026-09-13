@@ -1,0 +1,23 @@
+# Reference repositories are cloned locally, not vendored into the public product.
+/参考工程/*
+!/参考工程/README.md
+node_modules/
+dist/
+.output/
+.wxt/
+coverage/
+playwright-report/
+test-results/
+releases/
+.DS_Store
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crx
+*.log
