@@ -58,6 +58,8 @@
 - 新增 Release ZIP 白名单/权限审计，拒绝测试、coverage、quality、参考工程、私钥、日志、sourcemap、node_modules 和过宽权限进入发行包。
 - 新增 `npm run verify` / `npm run verify:full` 和 `quality/quality-report.json`，供 AI/Agent 自动判断可提交性。
 - Stryker mutation testing 做过真实评估，但当前 Vitest runner 在本仓库上出现 mutants 全部误报 Survived 的失真行为；结合 2026 年仍开放的 upstream runner/static mutant 问题，本轮不把 mutation score 纳入质量门禁。
+- v0.3.1 GitHub CI run `34761122024` 已全部成功：Windows / Ubuntu / macOS 基础质量门禁、Chromium E2E、Accessibility、Visual Regression 与 Performance Gate 全部 PASS。
+- v0.3.1 已发布：`https://github.com/arthurwangwsx-code/chrome-markdown-reader/releases/tag/v0.3.1`；正式 ZIP SHA-256 为 `d9a2725c3c8ab1a9d0b06a99ff1a77621270ba92c759e21668b826ab63df8385`。
 
 ## 剩余外部前置与长期增强
 
