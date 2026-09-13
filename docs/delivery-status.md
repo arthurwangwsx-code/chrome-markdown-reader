@@ -24,25 +24,25 @@
 | `npm run typecheck` | PASS |
 | `npm test` | PASS |
 | `npm run build` | PASS；Manifest V3 构建成功 |
-| `npm run test:e2e` | PASS 3/3；真实 Chromium 扩展加载、本地 `file://` 多图表阅读、高级图表与 HTML/DOCX 导出 |
+| `npm run test:e2e` | PASS 5/5；真实 Chromium 扩展加载、本地 `file://` 多图表、高级图表、HTML/DOCX/EPUB、大文档虚拟化与视觉回归 |
 | `npm audit` | 0 vulnerabilities |
-| `npm run benchmark` | PASS；完成约 1MB、11MB、100 Mermaid 图真实浏览器基准 |
-| `npm run package` | PASS；v0.2.0 Release ZIP 约 4.6 MB，SHA-256 `862a4ee9cf98fe966502d86349db79bc4e9f8390a604e73e4f88c5525cca44f7` |
+| `npm run benchmark` | PASS；每场景 3 次；11MB article 中位数约 1.86 秒，100 Mermaid 正文中位数约 0.16 秒，1MB 压力样例波动如实记录 |
+| `npm run package` | PASS；v0.3.0 ZIP 已生成，SHA-256 `d049343b1aea1b5028816ac568fc93dbce83cffd151b9f97b73a8d6718d6c8a3` |
 | GitHub CI | PASS：run `34748970038`；Windows / Ubuntu / macOS 三平台类型检查、单测、构建、打包和依赖审计全部成功，Ubuntu Chromium E2E 成功 |
-| GitHub Release | v0.2.0 已正式发布，包含 Chrome ZIP 与 SHA-256 文件 |
+| v0.3.0 本地发布候选 | PASS：大文档惰性解析、智能搜索、EPUB、富文本 DOCX、视觉基线、商店图标与真实 1280×800 商店截图均已落地 |
 
 研究准备与当前产品实现均已独立验证；高级兼容性仍以具体测试语料为准。
 
 ## 尚未执行 / 非当前阻塞项
 
-- 尚未完成 Chrome Web Store 上架；当前交付方式为公开源码 + GitHub Release / 解压加载。
+- 首次 Chrome Web Store item 尚未创建。V2 API 不支持创建新 item，且当前本机/GitHub 尚无 CWS OAuth、Publisher ID 与 Extension ID；代码侧 V2 上传/状态/提交审核 workflow 已完成。
 - Windows 本地桌面 GUI 手工验收尚未执行；Windows 构建/打包由 GitHub-hosted Windows runner 验证。
-- Chrome Web Store 上架、EPUB、更高保真 DOCX 和 10MB+ 虚拟化属于长期增强，不再属于 v0.2.0 阻塞项。
+- Windows 本地桌面 GUI 手工验收不是当前开源发布阻塞项；跨平台构建/打包由 CI 验证。
 
 “参考项目具有某能力”与“本产品已实现并验证某能力”在本次交付中严格分开。
 
 ## 下一阶段的直接入口
 
-当前核心与上一阶段增强链路均已通过。下一阶段可以转向 Web Store、虚拟化大文档、视觉回归和更高保真出版级导出。
+当前核心、第二阶段和第三阶段代码链路均已通过。代码侧剩余动作是发布 v0.3.0 并等待新的跨平台/视觉 CI；Web Store 真正上架只剩官方要求的一次性 Dashboard item/OAuth 外部配置。
 
 本轮目标已明确为最终公开源码，因此实现与文档将整理为 Git 提交并进入公有仓库。

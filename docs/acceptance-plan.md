@@ -99,15 +99,16 @@ CI Chromium 验证之后，还需在用户实际使用的 Chrome Stable 中加�
 
 ## 7. 当前状态
 
-截至 2026-09-13 v0.2.0：
+截至 2026-09-13 v0.3.0：
 
 - TypeScript 类型检查、单元测试、Manifest V3 构建、依赖审计均通过。
-- Playwright Chromium 扩展 E2E 为 3/3，通过本地 `file://` 阅读、Workspace、高级图表和 HTML/DOCX 导出验证。
+- Playwright Chromium 扩展/视觉 E2E 为 5/5，通过本地 `file://` 阅读、Workspace、高级图表、HTML/DOCX/EPUB 导出、大文档虚拟化和视觉基线验证。
 - Mermaid 类型级语料已覆盖 Gantt、Sequence（既有 fixture）、State、ER、Class、Mindmap、Flowchart。
 - JSON Canvas 与 Infographic 已纳入真实 Chromium E2E。
-- 1MB / 10MB / 100 Mermaid 图性能基准已执行，见 [性能报告](performance-2026-09-13.md)。
-- CI 已配置 Ubuntu/macOS/Windows 构建矩阵；Windows 使用 GitHub-hosted runner 做真实 Windows 构建验证。
-- macOS 本机 Chromium 已验证；Chrome Web Store 上架和 Windows GUI 手工交互验收不属于当前开源开发基线的阻塞项。
+- 750 KB 以上文档使用真正惰性的分块解析；约 11 MB 压力文档三次中位数首个可用状态约 1.86 秒，见 [性能报告](performance-2026-09-13.md)。
+- 本地智能搜索使用路径/标题加权与 TF-IDF/CJK bigram，不依赖在线模型。
+- CI 配置 Ubuntu/macOS/Windows 构建矩阵、Ubuntu Chromium 功能 E2E 与 macOS 视觉回归。
+- Chrome Web Store V2 的上传/提交审核脚本和 GitHub Actions 已完成；首次 Store item 因官方 API 限制仍需 Developer Dashboard 一次性创建。
 
 研究工具和发布状态见 [交付状态](delivery-status.md)。
 

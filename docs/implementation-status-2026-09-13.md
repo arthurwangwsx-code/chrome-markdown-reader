@@ -13,16 +13,20 @@
 - 独立工作区页面：File System Access 选择目录、懒展开目录、Markdown 文件过滤、文件名筛选、拖放单文件阅读。
 - 浅/深色自适应、宽表格、代码、图表容器、移动端与打印样式。
 - 自建 esbuild 打包流程、Release ZIP + SHA-256、TypeScript/Vitest/Playwright 骨架与综合/高级图表 fixture。
-- 完整离线 HTML 导出与 DOCX 导出；DOCX 会保留标题、正文、列表、表格，并将已渲染 SVG 图表光栅化后嵌入。
+- 完整离线 HTML、EPUB 3 与 DOCX 导出；DOCX 保留标题、粗体/斜体/删除线、行内代码、链接、列表、引用、表格，并将已渲染 SVG 图表光栅化后嵌入。
+- 750 KB 以上大文档采用标题扫描 + 安全分块 + IntersectionObserver 的真正惰性解析，离屏块在进入视口附近前不执行 Markdown parse/sanitize。
+- 本地智能搜索：路径/文件名加权、TF-IDF 风格 IDF、CJK bigram、精确短语加权和结果摘要；不联网、不加载 embedding 模型。
+- 视觉回归基线与真实商店截图资产已纳入仓库，Release 自动生成 16/32/48/128 PNG 图标。
+- Chrome Web Store API V2 上传/状态/发布脚本和手工触发 GitHub Actions 已准备完成。
 
 ## 已验证
 
 - `npm run typecheck`：通过。
 - `npm test`：通过。
 - `npm run build`：通过，Manifest V3 产物生成成功。
-- `npm run test:e2e`：通过，3/3；真实 Chromium 中完成扩展加载、Workspace 打开、本地 `file://` 多图表渲染，以及高级 Mermaid/Canvas/Infographic 与 HTML/DOCX 下载。
+- `npm run test:e2e`：通过，5/5；真实 Chromium 中完成扩展加载、Workspace、本地多图表、高级图表、HTML/DOCX/EPUB、EPUB 内部结构、大文档虚拟化和视觉回归。
 - `npm audit`：0 vulnerabilities。
-- `npm run benchmark`：完成 1.19 MB、11.02 MB、100 Mermaid 图三类真实 Chromium 基准，数据见性能报告。
+- `npm run benchmark`：每个场景 3 次取中位数；11.02 MB 文档 article 中位数约 1.86 秒、100 Mermaid 正文约 0.16 秒，数据和 1MB 波动说明见性能报告。
 - 经过共享模块拆分后，静态 content loader 约 163 B；富渲染依赖只在 Markdown 页面加载。
 - 公有仓库已创建并推送：`https://github.com/arthurwangwsx-code/chrome-markdown-reader`。
 - `v0.1.0` GitHub Release 已发布并附带 Chrome ZIP 与 SHA-256。
@@ -41,6 +45,8 @@
 - GitHub Actions 改为 Ubuntu/macOS/Windows 三平台类型检查、单测、构建和依赖审计，Ubuntu 额外执行 Chromium 扩展 E2E。
 - GitHub Actions run `34748970038` 已全部成功：Windows、Ubuntu、macOS 构建/打包 PASS，Chromium E2E PASS。
 
-## 后续增强方向
+## 剩余外部前置与长期增强
 
-v0.2.0 已完成此前列出的下一阶段核心项目。后续方向转为长期演进：更细粒度语义搜索、EPUB/更高保真 DOCX、Web Store 发布、视觉回归测试，以及针对 10MB+ 文档的虚拟化/分段 DOM 渲染。
+v0.3.0 已完成此前第三阶段核心项目。唯一尚不能由仓库代码独立完成的是首次 Chrome Web Store item 创建：官方 V2 API 不支持创建新 item，需要开发者在 Dashboard 一次性创建条目并提供 OAuth、Publisher ID 与 Extension ID；完成后后续版本可以走仓库的自动上传/提交审核流程。
+
+长期增强已不属于本阶段阻塞项：更精细的大文档调度、更多出版格式兼容测试、商店正式审核后的运营素材迭代。
