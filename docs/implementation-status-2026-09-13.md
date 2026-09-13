@@ -24,6 +24,8 @@
 - `npm run package`：成功生成 `chrome-markdown-reader-v0.1.0-chrome.zip` 与 SHA-256。
 - `dist` 约 13 MB，Release ZIP 约 4.1 MB。
 - 经过共享模块拆分后，静态 content loader 约 163 B；富渲染依赖只在 Markdown 页面加载。
+- 公有仓库已创建并推送：`https://github.com/arthurwangwsx-code/chrome-markdown-reader`。
+- `v0.1.0` GitHub Release 已发布并附带 Chrome ZIP 与 SHA-256。
 
 ## 本轮新增增强
 

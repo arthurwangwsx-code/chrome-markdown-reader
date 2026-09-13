@@ -18,7 +18,7 @@
 | `python3 scripts/validate-research.py` | PASS：13 个必需文件、6 个参考配置、7 个 Markdown 文档及本地链接检查；Python 语法检查通过 |
 | `python3 scripts/reference-repos.py verify` | PASS：6 个实际 Git 检出均为 clean，origin 和完整 SHA 与清单/锁文件一致 |
 | Git 忽略规则 | 六个参考检出被忽略，参考说明 README 保留；没有产品 submodule/gitlink |
-| `git remote -v` | 空：未配置公开仓库远端 |
+| GitHub 公有仓库 | 已发布：`arthurwangwsx-code/chrome-markdown-reader`，`main` 跟踪 `origin/main` |
 | 工作区 `sync` / `context` | 已登记 `web-chrome-markdown-reader`，工作区索引为 97 个项目；参考检出未被重复登记为产品 |
 | 工作区 `doctor` | 注册表结构健康；仍有其他工程的治理告警，例如缺少 AGENTS.md，本次未改动无关工程 |
 | `npm run typecheck` | PASS |
@@ -27,6 +27,7 @@
 | `npm run test:e2e` | PASS 2/2；真实 Chromium 扩展加载 + 本地 `file://` 多图表阅读 |
 | `npm audit` | 0 vulnerabilities |
 | `npm run package` | PASS；Release ZIP 约 4.1 MB，SHA-256 已生成 |
+| GitHub Release | v0.1.0 已发布，包含 Chrome ZIP 与 SHA-256 文件 |
 
 研究准备与当前产品实现均已独立验证；高级兼容性仍以具体测试语料为准。
 
