@@ -295,7 +295,7 @@ async function renderInfographic(el: HTMLElement, code: string, dark: boolean) {
   el.innerHTML = safeSvg(svg);
 }
 
-function containsRemoteReference(value: unknown, depth = 0): boolean {
+export function containsRemoteReference(value: unknown, depth = 0): boolean {
   if (depth > 20) return false;
   if (typeof value === 'string') return /^https?:\/\//i.test(value.trim());
   if (Array.isArray(value)) return value.some((item) => containsRemoteReference(item, depth + 1));

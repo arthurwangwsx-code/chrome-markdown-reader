@@ -6,6 +6,7 @@ dist/
 .output/
 .wxt/
 coverage/
+quality/
 playwright-report/
 test-results/
 releases/

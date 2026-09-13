@@ -36,7 +36,12 @@ try {
   const diagrams = '# 100 Mermaid diagrams\n\n' + Array.from({ length: 100 }, (_, i) => `## Diagram ${i + 1}\n\n\`\`\`mermaid\nflowchart LR\n  A${i}[Input] --> B${i}[Render] --> C${i}[Output]\n\`\`\`\n`).join('\n');
   const results = [];
   for (const [name, source] of [['one-mb', oneMb], ['ten-mb', tenMb], ['hundred-diagrams', diagrams]]) results.push(await scenario(name, source));
-  console.log(JSON.stringify({ generatedAt: new Date().toISOString(), results }, null, 2));
+  const report = { generatedAt: new Date().toISOString(), results };
+  await import('node:fs/promises').then(async ({ mkdir, writeFile }) => {
+    await mkdir('quality', { recursive: true });
+    await writeFile('quality/benchmark.json', JSON.stringify(report, null, 2) + '\n');
+  });
+  console.log(JSON.stringify(report, null, 2));
 } finally {
   await context.close(); await rm(temp, { recursive: true, force: true });
 }

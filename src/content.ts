@@ -15,12 +15,15 @@ async function main() {
   let markdown = original;
   try { markdown = await readFile(location.href.split('#')[0]!); } catch { /* browser body text remains useful fallback */ }
   document.documentElement.classList.add('mdr-active');
+  document.documentElement.lang = navigator.language || 'en';
+  const readerTitle = decodeURIComponent(location.pathname.split('/').pop() || 'Markdown');
+  document.title = readerTitle;
   document.head.querySelector('meta[name="viewport"]')?.remove();
   const viewport = document.createElement('meta'); viewport.name = 'viewport'; viewport.content = 'width=device-width,initial-scale=1'; document.head.append(viewport);
   document.body.replaceChildren();
   const host = document.createElement('div'); document.body.append(host);
   const sourceUrl = location.href.split('#')[0]!;
-  await mountReader(host, markdown, { sourceUrl, title: decodeURIComponent(location.pathname.split('/').pop() || 'Markdown'), onReload: () => readFile(sourceUrl) });
+  await mountReader(host, markdown, { sourceUrl, title: readerTitle, onReload: () => readFile(sourceUrl) });
   if (location.hash) requestAnimationFrame(() => document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView());
   let previous = markdown;
   let refreshing = false;
@@ -33,7 +36,7 @@ async function main() {
         previous = latest;
         await mountReader(host, latest, {
           sourceUrl,
-          title: decodeURIComponent(location.pathname.split('/').pop() || 'Markdown'),
+          title: readerTitle,
           onReload: () => readFile(sourceUrl),
         });
       }

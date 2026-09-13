@@ -3,7 +3,7 @@ function download(blob: Blob, name: string) {
   setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
 
-function safeName(title: string, ext: string) {
+export function safeName(title: string, ext: string) {
   return `${title.replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, ' ').trim() || 'document'}.${ext}`;
 }
 
@@ -85,7 +85,7 @@ export async function exportDocx(article: HTMLElement, title: string) {
   download(await Packer.toBlob(doc), safeName(title, 'docx'));
 }
 
-function escapeXml(value: string) {
+export function escapeXml(value: string) {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 }
 

@@ -7,7 +7,7 @@ function slugify(text: string, used: Map<string, number>): string {
   const seen = used.get(base) ?? 0; used.set(base, seen + 1); return seen ? `${base}-${seen + 1}` : base;
 }
 
-function scanHeadings(source: string, used: Map<string, number>): Heading[] {
+export function scanHeadings(source: string, used: Map<string, number> = new Map()): Heading[] {
   const headings: Heading[] = []; let fence = '';
   for (const line of source.split('\n')) {
     const marker = line.match(/^\s*(```+|~~~+)/)?.[1] ?? '';
@@ -19,7 +19,7 @@ function scanHeadings(source: string, used: Map<string, number>): Heading[] {
   return headings;
 }
 
-function splitSafe(source: string, target = 90_000): string[] {
+export function splitSafe(source: string, target = 90_000): string[] {
   const lines = source.split('\n'); const chunks: string[] = []; let current: string[] = []; let size = 0; let fence = '';
   const flush = () => { if (current.length) chunks.push(current.join('\n')); current = []; size = 0; };
   for (const line of lines) {
