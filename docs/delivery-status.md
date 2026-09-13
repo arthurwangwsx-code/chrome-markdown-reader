@@ -28,8 +28,8 @@
 | `npm audit` | 0 vulnerabilities |
 | `npm run benchmark` | PASS；完成约 1MB、11MB、100 Mermaid 图真实浏览器基准 |
 | `npm run package` | PASS；v0.2.0 Release ZIP 约 4.6 MB，SHA-256 `862a4ee9cf98fe966502d86349db79bc4e9f8390a604e73e4f88c5525cca44f7` |
-| GitHub CI | 已改为 Ubuntu / macOS / Windows 三平台构建矩阵，Ubuntu 另跑 Chromium E2E；本地提交后以远端结果为最终跨平台证据 |
-| GitHub Release | v0.1.0 已发布；本轮将发布 v0.2.0，包含 Chrome ZIP 与 SHA-256 文件 |
+| GitHub CI | PASS：run `34748970038`；Windows / Ubuntu / macOS 三平台类型检查、单测、构建、打包和依赖审计全部成功，Ubuntu Chromium E2E 成功 |
+| GitHub Release | v0.2.0 已正式发布，包含 Chrome ZIP 与 SHA-256 文件 |
 
 研究准备与当前产品实现均已独立验证；高级兼容性仍以具体测试语料为准。
 

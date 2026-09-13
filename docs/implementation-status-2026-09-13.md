@@ -39,6 +39,7 @@
 - AntV Infographic：动态加载，渲染后转换成安全 SVG，不增加普通文档首屏必载依赖。
 - 所有主要重型图表引擎改为动态 import，普通 Markdown 的 JS heap 基准从约 53.5 MB 降到约 11.2 MB；10 MB 文档耗时由约 11.4 秒改善到约 9.2 秒。
 - GitHub Actions 改为 Ubuntu/macOS/Windows 三平台类型检查、单测、构建和依赖审计，Ubuntu 额外执行 Chromium 扩展 E2E。
+- GitHub Actions run `34748970038` 已全部成功：Windows、Ubuntu、macOS 构建/打包 PASS，Chromium E2E PASS。
 
 ## 后续增强方向
 
