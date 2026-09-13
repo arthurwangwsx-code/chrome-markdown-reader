@@ -2,19 +2,21 @@
 
 面向本地技术文档的独立 Chrome Markdown 阅读扩展。
 
-> 当前阶段：v0.1.0 已完成实现、构建与 Chromium E2E 验证。项目以个人学习和公开源码为目标，继续按“能力优先、可验证、可维护”的方向演进。
+> 当前阶段：v0.2.0 已完成高级图表、导出、增量索引、性能基准与跨平台 CI 建设。项目以个人学习和公开源码为目标，继续按“能力优先、可验证、可维护”的方向演进。
 
 ## 已实现能力
 
 - Chrome 地址栏直接打开 `file:///.../document.md`，原地址就地切换为阅读视图。
 - Markdown/GFM、表格、任务列表、脚注、KaTeX 公式、代码高亮、安全 HTML。
 - H1–H6 文章目录、中文与重复标题锚点、原文切换、打印/PDF、自动刷新。
-- Mermaid（含甘特图、时序图及 Mermaid 支持的其它图型）、Graphviz/DOT、Vega/Vega-Lite、ECharts、PlantUML 兼容转换、draw.io。
+- Mermaid（已覆盖甘特图、时序图、状态图、ER、Class、Mindmap 等 E2E 语料）、Graphviz/DOT、Vega/Vega-Lite、ECharts、PlantUML 兼容转换、draw.io。
+- JSON Canvas 原生本地 SVG 渲染，以及 AntV Infographic 按需渲染。
 - 图表缩放、全屏、源码复制、SVG/PNG 导出与单块复杂度预算。
-- File System Access 工作区：目录树、最近工作区恢复、拖放、文件名过滤、可选全文索引。
+- File System Access 工作区：目录树、最近工作区恢复、拖放、文件名过滤、持久化增量全文索引。
+- 导出：打印/PDF、单图 SVG/PNG、完整离线 HTML、DOCX（含表格和已渲染图表）。
 - 系统/深色/护眼主题、字号和正文宽度控制，宽表格、打印和移动端适配。
 - 默认本地处理；运行时代码/WASM 随扩展打包，不依赖云端图表渲染服务。
-- 轻量 content loader：仅 Markdown 页面加载共享富渲染模块。
+- 轻量 content loader：仅 Markdown 页面加载共享阅读内核；Mermaid/ECharts/Vega/Graphviz/PlantUML/Infographic/DOCX 等重型能力进一步按需加载。
 
 ## 安装与使用
 
@@ -22,6 +24,7 @@
 npm install
 npm run check
 npm run test:e2e
+npm run benchmark
 npm run package
 ```
 
@@ -48,6 +51,7 @@ file:///absolute/path/to/document.md
 - [验收与测试计划](docs/acceptance-plan.md)
 - [当前交付状态](docs/delivery-status.md)
 - [实现状态](docs/implementation-status-2026-09-13.md)
+- [性能基准](docs/performance-2026-09-13.md)
 - [参考工程说明](参考工程/README.md)
 
 ## 本地参考工程
