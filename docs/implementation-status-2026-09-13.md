@@ -44,6 +44,8 @@
 - 所有主要重型图表引擎改为动态 import，普通 Markdown 的 JS heap 基准从约 53.5 MB 降到约 11.2 MB；10 MB 文档耗时由约 11.4 秒改善到约 9.2 秒。
 - GitHub Actions 改为 Ubuntu/macOS/Windows 三平台类型检查、单测、构建和依赖审计，Ubuntu 额外执行 Chromium 扩展 E2E。
 - GitHub Actions run `34748970038` 已全部成功：Windows、Ubuntu、macOS 构建/打包 PASS，Chromium E2E PASS。
+- v0.3.0 GitHub CI run `34750053314` 已全部成功：Windows / Ubuntu / macOS 构建打包审计、Chromium 功能 E2E 和 macOS 视觉回归全部 PASS。
+- v0.3.0 已发布：`https://github.com/arthurwangwsx-code/chrome-markdown-reader/releases/tag/v0.3.0`；正式 ZIP SHA-256 为 `b0e2382ef0ef65c0e1ef23657ce583ea4cb6e75b7425617f1cd56a6d34198e39`。
 
 ## 剩余外部前置与长期增强
 

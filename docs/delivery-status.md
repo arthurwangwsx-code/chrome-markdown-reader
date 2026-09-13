@@ -27,9 +27,9 @@
 | `npm run test:e2e` | PASS 5/5；真实 Chromium 扩展加载、本地 `file://` 多图表、高级图表、HTML/DOCX/EPUB、大文档虚拟化与视觉回归 |
 | `npm audit` | 0 vulnerabilities |
 | `npm run benchmark` | PASS；每场景 3 次；11MB article 中位数约 1.86 秒，100 Mermaid 正文中位数约 0.16 秒，1MB 压力样例波动如实记录 |
-| `npm run package` | PASS；v0.3.0 ZIP 已生成，SHA-256 `d049343b1aea1b5028816ac568fc93dbce83cffd151b9f97b73a8d6718d6c8a3` |
-| GitHub CI | PASS：run `34748970038`；Windows / Ubuntu / macOS 三平台类型检查、单测、构建、打包和依赖审计全部成功，Ubuntu Chromium E2E 成功 |
-| v0.3.0 本地发布候选 | PASS：大文档惰性解析、智能搜索、EPUB、富文本 DOCX、视觉基线、商店图标与真实 1280×800 商店截图均已落地 |
+| `npm run package` | PASS；正式 v0.3.0 ZIP SHA-256 `b0e2382ef0ef65c0e1ef23657ce583ea4cb6e75b7425617f1cd56a6d34198e39` |
+| GitHub CI | PASS：run `34750053314`；Windows / Ubuntu / macOS 构建/打包/审计、Ubuntu Chromium 功能 E2E、macOS 视觉回归全部成功 |
+| GitHub Release | v0.3.0 已正式发布：`https://github.com/arthurwangwsx-code/chrome-markdown-reader/releases/tag/v0.3.0`，包含 Chrome ZIP 与 SHA-256 |
 
 研究准备与当前产品实现均已独立验证；高级兼容性仍以具体测试语料为准。
 
@@ -43,6 +43,6 @@
 
 ## 下一阶段的直接入口
 
-当前核心、第二阶段和第三阶段代码链路均已通过。代码侧剩余动作是发布 v0.3.0 并等待新的跨平台/视觉 CI；Web Store 真正上架只剩官方要求的一次性 Dashboard item/OAuth 外部配置。
+当前核心、第二阶段和第三阶段代码链路均已通过并发布为 v0.3.0。Web Store 真正上架只剩官方要求的一次性 Dashboard item/OAuth 外部配置；仓库侧上传、状态查询和提交审核自动化已就绪。
 
 本轮目标已明确为最终公开源码，因此实现与文档将整理为 Git 提交并进入公有仓库。
