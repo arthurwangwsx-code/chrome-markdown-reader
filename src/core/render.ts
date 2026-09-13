@@ -92,9 +92,9 @@ function fromBase64Utf8(value: string): string {
   return new TextDecoder().decode(bytes);
 }
 
-export function renderMarkdown(source: string): RenderResult {
+export function renderMarkdown(source: string, sharedUsed?: Map<string, number>): RenderResult {
   const headings: Heading[] = [];
-  const used = new Map<string, number>();
+  const used = sharedUsed ?? new Map<string, number>();
   const md: MarkdownIt = new MarkdownIt({
     html: true,
     linkify: true,

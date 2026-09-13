@@ -1,6 +1,8 @@
 import { chromium, expect, test, type BrowserContext } from '@playwright/test';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { readFile } from 'node:fs/promises';
+import { strFromU8, unzipSync } from 'fflate';
 
 let context: BrowserContext;
 
@@ -34,7 +36,7 @@ test('renders a local markdown file with diagrams', async () => {
   await expect(page.locator('.mdr-diagram svg').first()).toBeVisible({ timeout: 20_000 });
 });
 
-test('renders advanced diagrams and exports HTML and DOCX', async () => {
+test('renders advanced diagrams and exports HTML, DOCX and EPUB', async () => {
   const page = await context.newPage();
   await page.goto(pathToFileURL(path.resolve('tests/fixtures/advanced.md')).href);
   await expect(page.locator('.mdr-diagram')).toHaveCount(7);
@@ -48,5 +50,28 @@ test('renders advanced diagrams and exports HTML and DOCX', async () => {
   const docxDownload = page.waitForEvent('download');
   await page.locator('[data-action="docx"]').click();
   expect((await docxDownload).suggestedFilename()).toMatch(/\.docx$/);
+
+  const epubDownload = page.waitForEvent('download');
+  await page.locator('[data-action="epub"]').click();
+  const epub = await epubDownload;
+  expect(epub.suggestedFilename()).toMatch(/\.epub$/);
+  const epubPath = await epub.path();
+  expect(epubPath).toBeTruthy();
+  const entries = unzipSync(new Uint8Array(await readFile(epubPath!)));
+  expect(strFromU8(entries.mimetype!)).toBe('application/epub+zip');
+  expect(strFromU8(entries['META-INF/container.xml']!)).toContain('OEBPS/content.opf');
+  expect(strFromU8(entries['OEBPS/content.xhtml']!)).toContain('高级能力验收');
+});
+
+test('uses virtual sections for very large local markdown', async () => {
+  const page = await context.newPage();
+  const huge = '# Large\n\n' + Array.from({ length: 32000 }, (_, i) => `## Section ${i}\n\nParagraph ${i} ${'x'.repeat(90)}\n`).join('');
+  const target = path.resolve('test-results/virtual-large.md');
+  const fs = await import('node:fs/promises');
+  await fs.mkdir(path.dirname(target), { recursive: true }); await fs.writeFile(target, huge);
+  await page.goto(pathToFileURL(target).href);
+  await expect(page.locator('.mdr-virtual-section').first()).toBeVisible({ timeout: 20_000 });
+  expect(await page.locator('.mdr-virtual-section').count()).toBeGreaterThan(3);
+  expect(await page.locator('.mdr-virtual-section[data-pending]').count()).toBeGreaterThan(0);
 });
 

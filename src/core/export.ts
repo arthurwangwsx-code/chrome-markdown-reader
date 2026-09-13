@@ -42,17 +42,31 @@ async function svgToPng(svg: SVGElement): Promise<{ data: Uint8Array; width: num
 }
 
 export async function exportDocx(article: HTMLElement, title: string) {
-  const { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, WidthType, ImageRun } = await import('docx');
+  const { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, WidthType, ImageRun, ExternalHyperlink } = await import('docx');
   const children: Array<InstanceType<typeof Paragraph> | InstanceType<typeof Table>> = [];
   const headingMap: Record<string, typeof HeadingLevel[keyof typeof HeadingLevel]> = { H1: HeadingLevel.HEADING_1, H2: HeadingLevel.HEADING_2, H3: HeadingLevel.HEADING_3, H4: HeadingLevel.HEADING_4, H5: HeadingLevel.HEADING_5, H6: HeadingLevel.HEADING_6 };
+  const inline = (node: Node, style: { bold?: boolean; italics?: boolean; strike?: boolean; font?: string } = {}): any[] => {
+    if (node.nodeType === Node.TEXT_NODE) return node.textContent ? [new TextRun({ text: node.textContent, ...style })] : [];
+    if (!(node instanceof HTMLElement)) return [];
+    const tag = node.tagName;
+    if (tag === 'BR') return [new TextRun({ break: 1 })];
+    const next = { ...style };
+    if (tag === 'STRONG' || tag === 'B') next.bold = true;
+    if (tag === 'EM' || tag === 'I') next.italics = true;
+    if (tag === 'S' || tag === 'DEL') next.strike = true;
+    if (tag === 'CODE') next.font = 'Courier New';
+    const runs = Array.from(node.childNodes).flatMap((child) => inline(child, next));
+    if (tag === 'A' && node.getAttribute('href')) return [new ExternalHyperlink({ link: node.getAttribute('href')!, children: runs.length ? runs : [new TextRun({ text: node.textContent ?? '', ...next })] })];
+    return runs;
+  };
   for (const node of Array.from(article.children) as HTMLElement[]) {
-    if (headingMap[node.tagName]) { children.push(new Paragraph({ text: node.textContent ?? '', heading: headingMap[node.tagName] })); continue; }
+    if (headingMap[node.tagName]) { children.push(new Paragraph({ children: inline(node), heading: headingMap[node.tagName], keepNext: true })); continue; }
     if (node.tagName === 'TABLE') {
-      const rows = Array.from(node.querySelectorAll(':scope > thead > tr, :scope > tbody > tr, :scope > tr')).map((row) => new TableRow({ children: Array.from(row.children).map((cell) => new TableCell({ children: [new Paragraph({ text: cell.textContent ?? '' })] })) }));
+      const rows = Array.from(node.querySelectorAll(':scope > thead > tr, :scope > tbody > tr, :scope > tr')).map((row) => new TableRow({ children: Array.from(row.children).map((cell) => new TableCell({ children: [new Paragraph({ children: inline(cell) })] })) }));
       if (rows.length) children.push(new Table({ rows, width: { size: 100, type: WidthType.PERCENTAGE } })); continue;
     }
     if (node.matches('ul,ol')) {
-      Array.from(node.querySelectorAll(':scope > li')).forEach((li) => children.push(new Paragraph({ text: li.textContent ?? '', bullet: { level: 0 } }))); continue;
+      Array.from(node.querySelectorAll(':scope > li')).forEach((li, index) => children.push(new Paragraph({ children: node.tagName === 'OL' ? [new TextRun({ text: `${index + 1}. ` }), ...inline(li)] : inline(li), ...(node.tagName === 'UL' ? { bullet: { level: 0 } } : {}) }))); continue;
     }
     const svg = node.matches('.mdr-diagram') ? node.querySelector<SVGElement>('svg') : null;
     if (svg) {
@@ -60,9 +74,43 @@ export async function exportDocx(article: HTMLElement, title: string) {
       catch { children.push(new Paragraph({ text: '[Diagram export unavailable]' })); }
       continue;
     }
-    if (node.tagName === 'PRE') { children.push(new Paragraph({ children: [new TextRun({ text: node.textContent ?? '', font: 'Courier New' })] })); continue; }
-    const text = node.textContent?.trim(); if (text) children.push(new Paragraph({ text }));
+    if (node.tagName === 'PRE') { children.push(new Paragraph({ children: [new TextRun({ text: node.textContent ?? '', font: 'Courier New' })], spacing: { before: 120, after: 120 } })); continue; }
+    if (node.tagName === 'BLOCKQUOTE') { children.push(new Paragraph({ children: inline(node, { italics: true }), indent: { left: 360 }, border: { left: { color: 'AAB2BD', size: 12, style: 'single', space: 8 } } })); continue; }
+    const text = node.textContent?.trim(); if (text) children.push(new Paragraph({ children: inline(node), spacing: { after: 120 } }));
   }
-  const doc = new Document({ sections: [{ children }] });
+  const doc = new Document({
+    creator: 'Markdown Reader Pro', title,
+    sections: [{ properties: { page: { margin: { top: 900, right: 900, bottom: 900, left: 900 } } }, children }],
+  });
   download(await Packer.toBlob(doc), safeName(title, 'docx'));
+}
+
+function escapeXml(value: string) {
+  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+}
+
+export async function exportEpub(article: HTMLElement, title: string) {
+  const { zipSync, strToU8 } = await import('fflate');
+  const clone = article.cloneNode(true) as HTMLElement;
+  clone.querySelectorAll('.mdr-diagram-tools').forEach((node) => node.remove());
+  await inlineImages(clone);
+  const bookId = crypto.randomUUID();
+  const safeTitle = escapeXml(title || 'Markdown document');
+  const css = `body{font:1em/1.65 sans-serif;color:#222}main{max-width:48em;margin:auto}pre{white-space:pre-wrap;background:#f5f5f5;padding:1em}table{border-collapse:collapse;width:100%}th,td{border:1px solid #aaa;padding:.4em}img,svg{max-width:100%;height:auto}blockquote{border-left:.25em solid #aaa;padding-left:1em;color:#555}`;
+  const content = `<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head><title>${safeTitle}</title><link rel="stylesheet" type="text/css" href="styles.css"/></head><body><main>${clone.innerHTML}</main></body></html>`;
+  const nav = `<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><head><title>Navigation</title></head><body><nav epub:type="toc"><h1>${safeTitle}</h1><ol><li><a href="content.xhtml">${safeTitle}</a></li></ol></nav></body></html>`;
+  const opf = `<?xml version="1.0" encoding="UTF-8"?><package xmlns="http://www.idpf.org/2007/opf" unique-identifier="book-id" version="3.0"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:identifier id="book-id">urn:uuid:${bookId}</dc:identifier><dc:title>${safeTitle}</dc:title><dc:language>en</dc:language><meta property="dcterms:modified">${new Date().toISOString().replace(/\.\d{3}Z$/, 'Z')}</meta></metadata><manifest><item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/><item id="content" href="content.xhtml" media-type="application/xhtml+xml"/><item id="css" href="styles.css" media-type="text/css"/></manifest><spine><itemref idref="content"/></spine></package>`;
+  const container = `<?xml version="1.0"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>`;
+  const files = {
+    mimetype: [strToU8('application/epub+zip'), { level: 0 }],
+    'META-INF': { 'container.xml': strToU8(container) },
+    OEBPS: {
+      'content.opf': strToU8(opf),
+      'content.xhtml': strToU8(content),
+      'nav.xhtml': strToU8(nav),
+      'styles.css': strToU8(css),
+    },
+  } as never;
+  const bytes = zipSync(files);
+  download(new Blob([bytes], { type: 'application/epub+zip' }), safeName(title, 'epub'));
 }

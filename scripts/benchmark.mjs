@@ -11,7 +11,7 @@ const context = await chromium.launchPersistentContext('', {
   args: [`--disable-extensions-except=${extensionPath}`, `--load-extension=${extensionPath}`],
 });
 
-async function scenario(name, markdown) {
+async function scenarioOnce(name, markdown) {
   const file = path.join(temp, `${name}.md`); await writeFile(file, markdown);
   const page = await context.newPage(); const start = performance.now();
   await page.goto(pathToFileURL(file).href);
@@ -21,6 +21,13 @@ async function scenario(name, markdown) {
   const settledMs = performance.now() - start;
   const heap = await page.evaluate(() => performance.memory?.usedJSHeapSize ?? null);
   await page.close(); return { name, bytes: Buffer.byteLength(markdown), articleMs: Math.round(articleMs), settledMs: Math.round(settledMs), heap };
+}
+
+async function scenario(name, markdown) {
+  const runs = [];
+  for (let i = 0; i < 3; i++) runs.push(await scenarioOnce(name, markdown));
+  const median = (key) => [...runs].sort((a, b) => (a[key] ?? 0) - (b[key] ?? 0))[1][key];
+  return { name, bytes: runs[0].bytes, articleMs: median('articleMs'), settledMs: median('settledMs'), heap: median('heap'), runs: runs.map(({ articleMs, settledMs, heap }) => ({ articleMs, settledMs, heap })) };
 }
 
 try {

@@ -1,6 +1,6 @@
 {
   "name": "chrome-markdown-reader",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,10 +8,14 @@
     "build": "node scripts/build.mjs build",
     "package": "node scripts/build.mjs package",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run tests/render.test.ts",
+    "test": "vitest run tests/*.test.ts",
     "check": "npm run typecheck && npm test && npm run build",
     "test:e2e": "playwright test",
-    "benchmark": "npm run build && node scripts/benchmark.mjs"
+    "benchmark": "npm run build && node scripts/benchmark.mjs",
+    "store:status": "node scripts/chrome-web-store.mjs status",
+    "store:upload": "node scripts/chrome-web-store.mjs upload",
+    "store:publish": "node scripts/chrome-web-store.mjs publish",
+    "store:assets": "npm run build && node scripts/store-assets.mjs"
   },
   "dependencies": {
     "@antv/infographic": "^0.2.20",
@@ -29,7 +33,8 @@
     "mermaid": "^11.12.0",
     "vega-embed": "^7.0.2",
     "vega-interpreter": "^2.1.3",
-    "web-worker": "^1.5.0"
+    "web-worker": "^1.5.0",
+    "fflate": "^0.8.3"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",
@@ -38,7 +43,7 @@
     "@types/markdown-it-footnote": "^3.0.4",
     "@types/node": "^22.15.0",
     "esbuild": "^0.28.2",
-    "fflate": "^0.8.3",
+    "pngjs": "^7.0.0",
     "typescript": "^5.9.2",
     "vitest": "^5.0.0"
   }

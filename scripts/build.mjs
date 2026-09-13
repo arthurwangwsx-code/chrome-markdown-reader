@@ -5,6 +5,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { createHash } from 'node:crypto';
 import { zipSync } from 'fflate';
+import { PNG } from 'pngjs';
 
 const ROOT = process.cwd();
 const DIST = path.join(ROOT, 'dist');
@@ -25,6 +26,27 @@ async function copyPublic() {
   await writeFile(cssPath, `@import url('./katex.min.css');\n@import url('./highlight.min.css');\n${css}`);
   const fontsSource = path.join(ROOT, 'node_modules/katex/dist/fonts');
   if (existsSync(fontsSource)) await cp(fontsSource, path.join(DIST, 'fonts'), { recursive: true });
+}
+
+async function generateIcons() {
+  const dir = path.join(DIST, 'icons');
+  await mkdir(dir, { recursive: true });
+  for (const size of [16, 32, 48, 128]) {
+    const png = new PNG({ width: size, height: size });
+    for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+      const i = (y * size + x) * 4; const t = (x + y) / Math.max(1, size * 2 - 2);
+      png.data[i] = Math.round(25 + 35 * t); png.data[i + 1] = Math.round(90 + 70 * t); png.data[i + 2] = Math.round(210 + 35 * t); png.data[i + 3] = 255;
+    }
+    const white = (x, y, w, h) => {
+      for (let yy = y; yy < Math.min(size, y + h); yy++) for (let xx = x; xx < Math.min(size, x + w); xx++) {
+        const i = (yy * size + xx) * 4; png.data[i] = png.data[i + 1] = png.data[i + 2] = 255;
+      }
+    };
+    const u = Math.max(1, Math.round(size / 16));
+    white(3*u, 4*u, 2*u, 8*u); white(5*u, 4*u, 2*u, 2*u); white(7*u, 6*u, 2*u, 2*u); white(9*u, 4*u, 2*u, 2*u); white(11*u, 4*u, 2*u, 8*u);
+    white(7*u, 10*u, 2*u, 3*u); white(5*u, 12*u, 6*u, 2*u);
+    await writeFile(path.join(dir, `icon${size}.png`), PNG.sync.write(png));
+  }
 }
 
 async function bundle() {
@@ -59,6 +81,7 @@ async function doBuild() {
   await clean();
   await mkdir(DIST, { recursive: true });
   await copyPublic();
+  await generateIcons();
   await bundle();
   const manifest = JSON.parse(await readFile(path.join(DIST, 'manifest.json'), 'utf8'));
   if (manifest.manifest_version !== 3) throw new Error('Expected Manifest V3');

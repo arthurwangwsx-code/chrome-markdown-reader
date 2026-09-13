@@ -1,4 +1,5 @@
 import { mountReader } from './core/ui';
+import { smartSearch } from './core/search';
 
 type TreeNode = { name: string; kind: 'file' | 'directory'; handle: FileSystemFileHandle | FileSystemDirectoryHandle; children?: TreeNode[] };
 type IndexedDoc = { name: string; path: string; handle: FileSystemFileHandle; text: string; size: number; lastModified: number };
@@ -139,18 +140,20 @@ async function buildIndex() {
 
 function renderSearchResults(query: string) {
   if (!query.trim() || !indexedDocs.length) return;
-  const q = query.trim().toLowerCase();
-  const matches = indexedDocs.filter((doc) => doc.path.toLowerCase().includes(q) || doc.text.toLowerCase().includes(q)).slice(0, 100);
+  const matches = smartSearch(query, indexedDocs, 100);
   const tree = root.querySelector<HTMLElement>('[data-tree]')!;
   tree.innerHTML = '';
-  for (const doc of matches) {
-    const button = document.createElement('button'); button.textContent = doc.path;
-    button.addEventListener('click', () => void openFile(doc.handle)); tree.append(button);
+  for (const hit of matches) {
+    const button = document.createElement('button'); button.className = 'mdr-search-hit';
+    const title = document.createElement('strong'); title.textContent = hit.doc.path;
+    const excerpt = document.createElement('span'); excerpt.textContent = hit.snippet;
+    button.append(title, excerpt);
+    button.addEventListener('click', () => void openFile(hit.doc.handle)); tree.append(button);
   }
   if (!matches.length) tree.innerHTML = '<div class="mdr-empty">No matches</div>';
 }
 
-root.innerHTML = `<div class="mdr-shell"><aside class="mdr-sidebar"><div class="mdr-brand">Markdown Workspace</div><button id="choose-folder">选择文件夹</button><button id="resume-workspace" hidden>恢复上次工作区</button><button id="index-workspace">建立全文索引</button><input class="mdr-search" placeholder="文件名 / 全文搜索" data-search><div class="mdr-tree" data-tree><div class="mdr-empty">选择一个目录开始阅读</div></div></aside><main class="mdr-main"><div data-reader><div class="mdr-empty">支持拖放 Markdown 文件，或从左侧打开工作区。</div></div></main></div>`;
+root.innerHTML = `<div class="mdr-shell"><aside class="mdr-sidebar"><div class="mdr-brand">Markdown Workspace</div><button id="choose-folder">选择文件夹</button><button id="resume-workspace" hidden>恢复上次工作区</button><button id="index-workspace">建立增量索引</button><input class="mdr-search" placeholder="智能搜索：标题 / 路径 / 内容" data-search><div class="mdr-tree" data-tree><div class="mdr-empty">选择一个目录开始阅读</div></div></aside><main class="mdr-main"><div data-reader><div class="mdr-empty">支持拖放 Markdown 文件，或从左侧打开工作区。</div></div></main></div>`;
 document.getElementById('choose-folder')!.addEventListener('click', () => void chooseFolder());
 document.getElementById('index-workspace')!.addEventListener('click', () => void buildIndex());
 root.addEventListener('dragover', (event) => event.preventDefault());

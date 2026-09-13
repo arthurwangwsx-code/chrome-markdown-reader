@@ -37,4 +37,18 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run build
-      - run: xvfb-run -a npm run test:e2e
+      - run: xvfb-run -a npx playwright test tests/e2e/extension.spec.ts
+
+  visual-regression:
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install chromium
+      - run: npm run build
+      - run: npx playwright test tests/e2e/visual.spec.ts
