@@ -1,6 +1,6 @@
 {
   "name": "chrome-markdown-reader",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,12 +10,15 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run tests/render.test.ts",
     "check": "npm run typecheck && npm test && npm run build",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "benchmark": "npm run build && node scripts/benchmark.mjs"
   },
   "dependencies": {
+    "@antv/infographic": "^0.2.20",
     "@markdown-viewer/draw-uml": "^1.4.7",
     "@markdown-viewer/drawio2svg": "^1.5.5",
     "@viz-js/viz": "^3.24.0",
+    "docx": "^9.7.1",
     "dompurify": "^3.2.6",
     "echarts": "^6.0.0",
     "highlight.js": "^11.11.1",
@@ -35,6 +38,7 @@
     "@types/markdown-it-footnote": "^3.0.4",
     "@types/node": "^22.15.0",
     "esbuild": "^0.28.2",
+    "fflate": "^0.8.3",
     "typescript": "^5.9.2",
     "vitest": "^5.0.0"
   }

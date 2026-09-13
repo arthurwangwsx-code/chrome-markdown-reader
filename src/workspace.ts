@@ -1,7 +1,7 @@
 import { mountReader } from './core/ui';
 
 type TreeNode = { name: string; kind: 'file' | 'directory'; handle: FileSystemFileHandle | FileSystemDirectoryHandle; children?: TreeNode[] };
-type IndexedDoc = { name: string; path: string; handle: FileSystemFileHandle; text: string };
+type IndexedDoc = { name: string; path: string; handle: FileSystemFileHandle; text: string; size: number; lastModified: number };
 const root = document.getElementById('workspace-root')!;
 let currentDirectory: FileSystemDirectoryHandle | undefined;
 let indexedDocs: IndexedDoc[] = [];
@@ -11,11 +11,31 @@ const mdExt = /\.(?:md|markdown|mdown|mkd)$/i;
 
 function openDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open('markdown-reader', 1);
-    request.onupgradeneeded = () => request.result.createObjectStore('workspace');
+    const request = indexedDB.open('markdown-reader', 2);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains('workspace')) db.createObjectStore('workspace');
+      if (!db.objectStoreNames.contains('index')) db.createObjectStore('index', { keyPath: 'path' });
+    };
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
   });
+}
+
+async function loadCachedIndex(): Promise<IndexedDoc[]> {
+  const db = await openDb();
+  const docs = await new Promise<IndexedDoc[]>((resolve, reject) => {
+    const tx = db.transaction('index', 'readonly'); const req = tx.objectStore('index').getAll();
+    req.onsuccess = () => resolve((req.result ?? []) as IndexedDoc[]); req.onerror = () => reject(req.error);
+  }); db.close(); return docs;
+}
+
+async function persistIndex(docs: IndexedDoc[]) {
+  const db = await openDb();
+  await new Promise<void>((resolve, reject) => {
+    const tx = db.transaction('index', 'readwrite'); const store = tx.objectStore('index'); store.clear(); docs.forEach((doc) => store.put(doc));
+    tx.oncomplete = () => resolve(); tx.onerror = () => reject(tx.error);
+  }); db.close();
 }
 
 async function saveLastWorkspace(handle: FileSystemDirectoryHandle) {
@@ -84,18 +104,20 @@ async function chooseFolder() {
   indexedDocs = [];
 }
 
-async function collectDocs(handle: FileSystemDirectoryHandle, prefix = '', budget = { files: 0, bytes: 0 }): Promise<void> {
+async function collectDocs(handle: FileSystemDirectoryHandle, cached: Map<string, IndexedDoc>, prefix = '', budget = { files: 0, bytes: 0 }): Promise<void> {
   if (budget.files >= 1500 || budget.bytes >= 50 * 1024 * 1024) return;
   for await (const [name, child] of handle.entries()) {
     if (ignored.has(name) || name.startsWith('.')) continue;
     const path = prefix ? `${prefix}/${name}` : name;
     if (child.kind === 'directory') {
-      await collectDocs(child, path, budget);
+      await collectDocs(child, cached, path, budget);
       if (budget.files >= 1500 || budget.bytes >= 50 * 1024 * 1024) break;
     } else if (mdExt.test(name)) {
       const file = await child.getFile();
       if (file.size > 2 * 1024 * 1024 || budget.bytes + file.size > 50 * 1024 * 1024) continue;
-      indexedDocs.push({ name, path, handle: child, text: await file.text() });
+      const previous = cached.get(path);
+      const text = previous && previous.size === file.size && previous.lastModified === file.lastModified ? previous.text : await file.text();
+      indexedDocs.push({ name, path, handle: child, text, size: file.size, lastModified: file.lastModified });
       budget.files += 1; budget.bytes += file.size;
     }
   }
@@ -106,7 +128,12 @@ async function buildIndex() {
   indexedDocs = [];
   const button = document.querySelector<HTMLButtonElement>('#index-workspace')!;
   button.disabled = true; button.textContent = 'Indexing…';
-  try { await collectDocs(currentDirectory); button.textContent = `Indexed ${indexedDocs.length}`; }
+  try {
+    const cached = new Map((await loadCachedIndex()).map((doc) => [doc.path, doc]));
+    await collectDocs(currentDirectory, cached);
+    await persistIndex(indexedDocs);
+    button.textContent = `Indexed ${indexedDocs.length}`;
+  }
   finally { button.disabled = false; }
 }
 
@@ -145,6 +172,7 @@ void loadLastWorkspace().then(async (handle) => {
   if (permission === 'granted') {
     currentDirectory = handle;
     await renderTree(root.querySelector<HTMLElement>('[data-tree]')!, await readDirectory(handle));
+    indexedDocs = await loadCachedIndex();
   } else {
     const resume = document.querySelector<HTMLButtonElement>('#resume-workspace')!; resume.hidden = false;
     resume.addEventListener('click', async () => {

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Markdown Reader Pro",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A local-first Markdown reader with folders, diagrams, math, themes and export.",
   "permissions": ["storage"],
   "host_permissions": ["file:///*"],

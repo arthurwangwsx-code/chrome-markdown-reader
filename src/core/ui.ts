@@ -1,4 +1,5 @@
 import { hydrateDiagrams, renderMarkdown, type Heading } from './render';
+import { exportDocx, exportOfflineHtml } from './export';
 
 export type ReaderOptions = {
   sourceUrl?: string;
@@ -58,7 +59,7 @@ export async function mountReader(host: HTMLElement, markdown: string, options: 
   host.innerHTML = `
     <div class="mdr-shell">
       <aside class="mdr-sidebar"><div class="mdr-brand">${escapeHtml(options.title ?? 'Markdown Reader')}</div><nav class="mdr-toc">${tocHtml(result.headings)}</nav></aside>
-      <main class="mdr-main"><div class="mdr-toolbar"><button data-action="print">Print / PDF</button><button data-action="source">Source</button>${options.onReload ? '<button data-action="reload">Reload</button>' : ''}<button data-action="smaller">A−</button><button data-action="larger">A+</button><button data-action="width">Width</button><button data-action="theme">Theme</button><span class="mdr-path">${escapeHtml(options.sourceUrl ?? '')}</span></div><article class="mdr-article"></article></main>
+      <main class="mdr-main"><div class="mdr-toolbar"><button data-action="print">Print / PDF</button><button data-action="html">Offline HTML</button><button data-action="docx">DOCX</button><button data-action="source">Source</button>${options.onReload ? '<button data-action="reload">Reload</button>' : ''}<button data-action="smaller">A−</button><button data-action="larger">A+</button><button data-action="width">Width</button><button data-action="theme">Theme</button><span class="mdr-path">${escapeHtml(options.sourceUrl ?? '')}</span></div><article class="mdr-article"></article></main>
     </div>`;
   const article = host.querySelector<HTMLElement>('.mdr-article')!;
   article.innerHTML = result.html;
@@ -66,6 +67,8 @@ export async function mountReader(host: HTMLElement, markdown: string, options: 
   await hydrateDiagrams(article);
 
   host.querySelector('[data-action="print"]')?.addEventListener('click', () => window.print());
+  host.querySelector('[data-action="html"]')?.addEventListener('click', () => void exportOfflineHtml(article, options.title ?? 'document'));
+  host.querySelector('[data-action="docx"]')?.addEventListener('click', () => void exportDocx(article, options.title ?? 'document'));
   host.querySelector('[data-action="source"]')?.addEventListener('click', () => {
     const pre = document.createElement('pre');
     const code = document.createElement('code'); code.textContent = markdown; pre.append(code);

@@ -1,10 +1,10 @@
 import { build } from 'esbuild';
-import { cp, mkdir, rm, readFile, writeFile } from 'node:fs/promises';
+import { cp, mkdir, rm, readFile, writeFile, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { createHash } from 'node:crypto';
-import { execFileSync } from 'node:child_process';
+import { zipSync } from 'fflate';
 
 const ROOT = process.cwd();
 const DIST = path.join(ROOT, 'dist');
@@ -75,7 +75,16 @@ async function packageRelease() {
   const name = `chrome-markdown-reader-v${manifest.version}-chrome.zip`;
   const archive = path.join(RELEASES, name);
   if (existsSync(archive)) await rm(archive);
-  execFileSync('/usr/bin/zip', ['-q', '-r', archive, '.'], { cwd: DIST });
+  const files = {};
+  async function collect(directory) {
+    for (const entry of await readdir(directory, { withFileTypes: true })) {
+      const absolute = path.join(directory, entry.name);
+      if (entry.isDirectory()) await collect(absolute);
+      else if (entry.isFile()) files[path.relative(DIST, absolute).split(path.sep).join('/')] = new Uint8Array(await readFile(absolute));
+    }
+  }
+  await collect(DIST);
+  await writeFile(archive, zipSync(files, { level: 9 }));
   const bytes = await readFile(archive);
   const sha = createHash('sha256').update(bytes).digest('hex');
   await writeFile(`${archive}.sha256`, `${sha}  ${name}\n`);

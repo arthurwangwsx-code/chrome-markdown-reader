@@ -34,3 +34,19 @@ test('renders a local markdown file with diagrams', async () => {
   await expect(page.locator('.mdr-diagram svg').first()).toBeVisible({ timeout: 20_000 });
 });
 
+test('renders advanced diagrams and exports HTML and DOCX', async () => {
+  const page = await context.newPage();
+  await page.goto(pathToFileURL(path.resolve('tests/fixtures/advanced.md')).href);
+  await expect(page.locator('.mdr-diagram')).toHaveCount(7);
+  await expect(page.locator('.mdr-diagram-error')).toHaveCount(0, { timeout: 25_000 });
+  await expect(page.locator('.mdr-diagram svg')).toHaveCount(7, { timeout: 25_000 });
+
+  const htmlDownload = page.waitForEvent('download');
+  await page.locator('[data-action="html"]').click();
+  expect((await htmlDownload).suggestedFilename()).toMatch(/\.html$/);
+
+  const docxDownload = page.waitForEvent('download');
+  await page.locator('[data-action="docx"]').click();
+  expect((await docxDownload).suggestedFilename()).toMatch(/\.docx$/);
+});
+
