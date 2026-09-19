@@ -112,6 +112,13 @@ CI Chromium 验证之后，还需在用户实际使用的 Chrome Stable 中加�
 - 新增统一 `npm run verify` / `npm run verify:full`，串联 Typecheck、Lint、逐文件 Coverage、安全回归、功能 E2E、Accessibility、Visual、Performance、Release 包审计与依赖审计。
 - `quality/quality-report.json` 作为 AI/Agent 可直接消费的机器报告，生成目录不进入 Git。
 
+### 2026-09-19：真实技术方案图表回归补充
+
+- 从外部真实技术方案评测语料中抽取 Mermaid / PlantUML fenced blocks：131 个图表块去重后为 11 种唯一语法形态，其中 Mermaid 6 种、PlantUML 5 种。
+- 公开仓库使用脱敏但语法等价的 `tests/fixtures/sa-diagrams-regression.md` 固化这些形态，不保存外部文档、绝对路径或业务源码。
+- Mermaid 回归覆盖 Flowchart 的 subgraph、style、中文标签、连线标签、实线/虚线关系；PlantUML 回归覆盖 use-case、sequence、autonumber、activate/deactivate、alt/else、彩色 note、Unicode 文本与模板占位符。
+- `tests/e2e/extension.spec.ts` 在真实 Chromium 中要求 11 个图表全部生成 SVG，且 `.mdr-diagram-error` 为 0；这组回归用于阻止“简单 demo 能渲染、真实技术方案不能渲染”的兼容性倒退。
+
 研究工具和发布状态见 [交付状态](delivery-status.md)。
 
 ## 来源

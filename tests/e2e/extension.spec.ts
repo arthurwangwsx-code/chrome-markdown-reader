@@ -63,6 +63,16 @@ test('renders advanced diagrams and exports HTML, DOCX and EPUB', async () => {
   expect(strFromU8(entries['OEBPS/content.xhtml']!)).toContain('高级能力验收');
 });
 
+test('renders SA-style Mermaid and PlantUML regression diagrams', async () => {
+  const page = await context.newPage();
+  await page.goto(pathToFileURL(path.resolve('tests/fixtures/sa-diagrams-regression.md')).href);
+  await expect(page.locator('h1')).toContainText('SA Diagram Regression');
+  await expect(page.locator('.mdr-diagram[data-diagram="mermaid"]')).toHaveCount(6);
+  await expect(page.locator('.mdr-diagram[data-diagram="plantuml"]')).toHaveCount(5);
+  await expect(page.locator('.mdr-diagram-error')).toHaveCount(0, { timeout: 25_000 });
+  await expect(page.locator('.mdr-diagram svg')).toHaveCount(11, { timeout: 25_000 });
+});
+
 test('uses virtual sections for very large local markdown', async () => {
   const page = await context.newPage();
   const huge = '# Large\n\n' + Array.from({ length: 32000 }, (_, i) => `## Section ${i}\n\nParagraph ${i} ${'x'.repeat(90)}\n`).join('');
