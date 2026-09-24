@@ -1,6 +1,6 @@
 # 本次交付状态
 
-日期：2026-09-13，Asia/Kuala_Lumpur。
+日期：2026-09-24，Asia/Kuala_Lumpur。
 
 ## 已完成的准备工作
 
@@ -38,6 +38,13 @@
 | GitHub Release | v0.3.1 已正式发布：`https://github.com/arthurwangwsx-code/chrome-markdown-reader/releases/tag/v0.3.1`，包含 Chrome ZIP 与 SHA-256 |
 
 研究准备与当前产品实现均已独立验证；高级兼容性仍以具体测试语料为准。
+
+### v0.3.2 补充验证
+
+- 修复 Mermaid 11.17+ strict 模式下 Flowchart 节点文字消失：配置从已弃用的 `flowchart.htmlLabels: false` 调整为全局 `htmlLabels: false`，不放宽安全策略。
+- 新增 5 张生产风格 Mermaid 图回归，覆盖 Flowchart 与 Sequence Diagram；现有 SA 回归增加节点文字存在性断言。
+- `npm run verify` PASS：typecheck、lint、coverage、安全、6 个 Chromium 功能 E2E、Accessibility、Visual、打包、Release check、audit 全部通过。
+- 性能专项中 100 Mermaid 中位数约 186 ms 正文可见 / 2.14 s settled，仍在预算内；当前机器 11 MB 纯文本 benchmark 受运行环境影响出现约 11.5 s 的单项超预算，因此未修改性能门槛。
 
 ## 尚未执行 / 非当前阻塞项
 

@@ -158,7 +158,11 @@ async function renderMermaid(el: HTMLElement, code: string, dark: boolean) {
       startOnLoad: false,
       securityLevel: 'strict',
       theme: dark ? 'dark' : 'default',
-      flowchart: { htmlLabels: false },
+      // Mermaid 11.17+ treats flowchart.htmlLabels as deprecated and may emit
+      // node labels through <foreignObject>. Our SVG sanitizer intentionally
+      // removes foreignObject, so keep HTML labels disabled at the global
+      // Mermaid config level to preserve labels as safe SVG <text>.
+      htmlLabels: false,
     });
     mermaidReady = true;
   }

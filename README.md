@@ -2,7 +2,7 @@
 
 面向本地技术文档的独立 Chrome Markdown 阅读扩展。
 
-> 当前阶段：v0.3.1 在 v0.3.0 功能基线上补齐 AI Quality Loop：逐文件 coverage、安全回归、Accessibility、视觉回归、性能预算、Release 包审计、统一 `verify` / `verify:full` 和机器可读质量报告。项目以个人学习和公开源码为目标，按“能力优先、可验证、可维护”的方向持续演进。
+> 当前阶段：v0.3.2 修复 Mermaid 11.17+ 下 strict 模式流程图节点文字被安全清洗后消失的问题，并补齐真实技术方案风格的 Flowchart / Sequence Diagram 回归；v0.3.1 的 AI Quality Loop 继续作为统一质量基线。项目以个人学习和公开源码为目标，按“能力优先、可验证、可维护”的方向持续演进。
 
 ## 已实现能力
 

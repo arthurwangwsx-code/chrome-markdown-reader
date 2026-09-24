@@ -61,6 +61,13 @@
 - v0.3.1 GitHub CI run `34761122024` 已全部成功：Windows / Ubuntu / macOS 基础质量门禁、Chromium E2E、Accessibility、Visual Regression 与 Performance Gate 全部 PASS。
 - v0.3.1 已发布：`https://github.com/arthurwangwsx-code/chrome-markdown-reader/releases/tag/v0.3.1`；正式 ZIP SHA-256 为 `d9a2725c3c8ab1a9d0b06a99ff1a77621270ba92c759e21668b826ab63df8385`。
 
+### v0.3.2：Mermaid strict 标签兼容修复
+
+- Mermaid 11.17+ 已弃用 `flowchart.htmlLabels`；改用全局 `htmlLabels: false`，继续保持 `securityLevel: strict`，避免流程图节点标签被渲染为随后会被 SVG 安全清洗移除的 `foreignObject`。
+- 新增真实技术方案风格的 Mermaid 回归语料，覆盖中英文 quoted labels、Flowchart、Sequence Diagram、alt/else、5xx/timeout、长配置 Key 与实体转义分号。
+- 现有 SA 图表回归新增“SVG 内节点文字真实存在”的断言，避免只有图形轮廓、文字被清洗掉时出现假通过。
+- Chromium 功能 E2E、Accessibility、Visual、Release check 与标准 `npm run verify` 均通过；100 Mermaid 性能仍在预算内。
+
 ## 剩余外部前置与长期增强
 
 v0.3.0 已完成此前第三阶段核心项目，v0.3.1 将测试体系提升为可持续 AI 自测/自修基线。唯一尚不能由仓库代码独立完成的是首次 Chrome Web Store item 创建：官方 V2 API 不支持创建新 item，需要开发者在 Dashboard 一次性创建条目并提供 OAuth、Publisher ID 与 Extension ID；完成后后续版本可以走仓库的自动上传/提交审核流程。

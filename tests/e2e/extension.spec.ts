@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { strFromU8, unzipSync } from 'fflate';
 
 let context: BrowserContext;
+let extensionId = '';
 
 test.beforeAll(async () => {
   const extensionPath = path.resolve('dist');
@@ -12,14 +13,14 @@ test.beforeAll(async () => {
     headless: false,
     args: [`--disable-extensions-except=${extensionPath}`, `--load-extension=${extensionPath}`],
   });
+  let worker = context.serviceWorkers()[0];
+  if (!worker) worker = await context.waitForEvent('serviceworker');
+  extensionId = new URL(worker.url()).host;
 });
 
 test.afterAll(async () => { await context?.close(); });
 
 test('loads the extension and opens its workspace', async () => {
-  let worker = context.serviceWorkers()[0];
-  if (!worker) worker = await context.waitForEvent('serviceworker');
-  const extensionId = new URL(worker.url()).host;
   const page = await context.newPage();
   await page.goto(`chrome-extension://${extensionId}/workspace.html`);
   await expect(page.locator('text=Markdown Workspace')).toBeVisible();
@@ -71,6 +72,25 @@ test('renders SA-style Mermaid and PlantUML regression diagrams', async () => {
   await expect(page.locator('.mdr-diagram[data-diagram="plantuml"]')).toHaveCount(5);
   await expect(page.locator('.mdr-diagram-error')).toHaveCount(0, { timeout: 25_000 });
   await expect(page.locator('.mdr-diagram svg')).toHaveCount(11, { timeout: 25_000 });
+  await expect(page.locator('.mdr-diagram[data-diagram="mermaid"]').first().locator('svg')).toContainText('订单列表页');
+});
+
+test('renders strict Mermaid flowchart labels and production-style sequences', async () => {
+  const page = await context.newPage();
+  await page.goto(pathToFileURL(path.resolve('tests/fixtures/mermaid-runtime-regression.md')).href);
+  await expect(page.locator('h1')).toContainText('Mermaid Runtime Regression');
+  const diagrams = page.locator('.mdr-diagram[data-diagram="mermaid"]');
+  await expect(diagrams).toHaveCount(5);
+  await expect(page.locator('.mdr-diagram-error')).toHaveCount(0, { timeout: 25_000 });
+  await expect(diagrams.locator('svg')).toHaveCount(5, { timeout: 25_000 });
+  await expect(diagrams.nth(0).locator('svg')).toContainText('Card list preview');
+  await expect(diagrams.nth(0).locator('svg')).toContainText('Portal User 用户');
+  await expect(diagrams.nth(0).locator('foreignObject')).toHaveCount(0);
+  await expect(diagrams.nth(1).locator('svg')).toContainText('Existing Card API');
+  await expect(diagrams.nth(2).locator('svg')).toContainText('Frozen');
+  await expect(diagrams.nth(3).locator('svg')).toContainText('5xx / timeout');
+  await expect(diagrams.nth(3).locator('svg')).toContainText('Reuse existing error handling; no false-success card face');
+  await expect(diagrams.nth(4).locator('svg')).toContainText('FEATURE_CARD_FACE_COMPLIANCE');
 });
 
 test('uses virtual sections for very large local markdown', async () => {
