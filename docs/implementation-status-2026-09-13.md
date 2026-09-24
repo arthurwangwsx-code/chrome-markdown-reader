@@ -68,6 +68,18 @@
 - 现有 SA 图表回归新增“SVG 内节点文字真实存在”的断言，避免只有图形轮廓、文字被清洗掉时出现假通过。
 - Chromium 功能 E2E、Accessibility、Visual、Release check 与标准 `npm run verify` 均通过；100 Mermaid 性能仍在预算内。
 
+### v0.4.0：工作区目录、双侧导航与 Headless 验证
+
+- 文件夹工作区扩展为项目资料浏览器：左侧文件树支持 Markdown、常见纯文本和图片；Markdown/TXT 类文本可进入本地索引，图片只预览、不做 OCR。
+- 支持点击“选择文件夹”与把目录拖入工作区两种授权入口；仍以 File System Access handle 为安全边界，不通过文本路径猜测绝对目录。
+- Markdown 的 H1–H6 标题导航移动到右侧；项目文件树固定在左侧。单文件 Markdown 也统一使用右侧标题导航。
+- 工作区内 Markdown 的相对图片与相对文档链接可在已授权根目录内解析，路径遍历不会越过所选目录。
+- 新增真实 Chromium 工作区 E2E：使用浏览器本地 FileSystemDirectoryHandle 构造 Markdown + TXT + PNG 混合目录，验证左文件树、右 H1–H6、相对图片、文本预览和图片预览；标准 `npm run verify` 已通过，功能 E2E 现为 7/7。
+
+- 所有自动化 Chromium 场景统一切换到完整 Chromium 的 new-headless：功能 E2E、Accessibility、Visual、Performance benchmark、商店截图脚本默认不再弹出浏览器窗口。
+- Playwright 默认 headless shell 无法加载本项目 Manifest V3 扩展，因此显式固定 `channel: chromium`；人工调试可用 `MDR_HEADED=1` 恢复有界面浏览器。
+- Linux CI 去除 `xvfb-run` 包装，直接运行 headless E2E / Accessibility，减少显示服务器依赖和本地测试干扰。
+
 ## 剩余外部前置与长期增强
 
 v0.3.0 已完成此前第三阶段核心项目，v0.3.1 将测试体系提升为可持续 AI 自测/自修基线。唯一尚不能由仓库代码独立完成的是首次 Chrome Web Store item 创建：官方 V2 API 不支持创建新 item，需要开发者在 Dashboard 一次性创建条目并提供 OAuth、Publisher ID 与 Extension ID；完成后后续版本可以走仓库的自动上传/提交审核流程。

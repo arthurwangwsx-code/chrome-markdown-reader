@@ -22,6 +22,8 @@ npm run verify
 10. Release 内容与权限审计。
 11. `npm audit --audit-level=high`。
 
+Chromium E2E / Accessibility / Visual / Performance 默认使用完整 Chromium 的 new-headless 模式。普通 Playwright headless shell 不加载扩展，因此测试统一显式使用 `channel: 'chromium'`；只有人工排障时通过 `MDR_HEADED=1` 切换为有界面模式。CI 不再依赖 Xvfb 来伪造显示环境。
+
 结果同时写入 `quality/quality-report.json`。该目录不提交 Git，供 Agent、CI 或其他自动化消费。
 
 涉及 Markdown 内核、虚拟化、图表、性能或大文档路径时使用：

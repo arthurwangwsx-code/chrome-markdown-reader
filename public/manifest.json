@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Markdown Reader Pro",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "A local-first Markdown reader with folders, diagrams, math, themes and export.",
   "icons": { "16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
   "permissions": ["storage"],

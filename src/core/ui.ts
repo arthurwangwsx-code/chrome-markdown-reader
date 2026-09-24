@@ -4,8 +4,11 @@ import { renderVirtualMarkdown } from './virtual';
 
 export type ReaderOptions = {
   sourceUrl?: string;
+  sourceLabel?: string;
   title?: string;
   onReload?: () => Promise<string>;
+  resolveAsset?: (ref: string) => Promise<string | undefined>;
+  onOpenRelative?: (ref: string) => Promise<boolean> | boolean;
 };
 
 type ReaderPrefs = { width: 'narrow' | 'normal' | 'wide'; fontScale: number; theme: 'system' | 'sepia' | 'dark' };
@@ -34,22 +37,32 @@ function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]!));
 }
 
-function decorateLinks(article: HTMLElement, sourceUrl?: string) {
+async function decorateLinks(article: HTMLElement, options: ReaderOptions) {
   article.querySelectorAll<HTMLAnchorElement>('a[href]').forEach((a) => {
     const href = a.getAttribute('href') ?? '';
     if (/^(https?:)?\/\//i.test(href)) {
       a.target = '_blank'; a.rel = 'noopener noreferrer';
-    } else if (sourceUrl && !href.startsWith('#')) {
-      try { a.href = new URL(href, sourceUrl).href; } catch { /* keep original */ }
+    } else if (!href.startsWith('#') && options.onOpenRelative) {
+      a.addEventListener('click', (event) => {
+        event.preventDefault();
+        void Promise.resolve(options.onOpenRelative?.(href));
+      });
+    } else if (options.sourceUrl && !href.startsWith('#')) {
+      try { a.href = new URL(href, options.sourceUrl).href; } catch { /* keep original */ }
     }
   });
-  article.querySelectorAll<HTMLImageElement>('img[src]').forEach((img) => {
+  await Promise.all(Array.from(article.querySelectorAll<HTMLImageElement>('img[src]')).map(async (img) => {
     const src = img.getAttribute('src') ?? '';
-    if (sourceUrl && !/^(data:|blob:|https?:)/i.test(src)) {
-      try { img.src = new URL(src, sourceUrl).href; } catch { /* keep original */ }
+    if (options.resolveAsset && !/^(data:|blob:|https?:)/i.test(src)) {
+      try {
+        const resolved = await options.resolveAsset(src);
+        if (resolved) img.src = resolved;
+      } catch { /* keep original source so the browser shows a normal failure */ }
+    } else if (options.sourceUrl && !/^(data:|blob:|https?:)/i.test(src)) {
+      try { img.src = new URL(src, options.sourceUrl).href; } catch { /* keep original */ }
     }
     img.loading = 'lazy';
-  });
+  }));
 }
 
 export async function mountReader(host: HTMLElement, markdown: string, options: ReaderOptions = {}) {
@@ -60,15 +73,15 @@ export async function mountReader(host: HTMLElement, markdown: string, options: 
   const result = virtual ? { html: '', headings: [] as Heading[] } : renderMarkdown(markdown);
   host.innerHTML = `
     <div class="mdr-shell">
-      <aside class="mdr-sidebar"><div class="mdr-brand">${escapeHtml(options.title ?? 'Markdown Reader')}</div><nav class="mdr-toc">${tocHtml(result.headings)}</nav></aside>
-      <main class="mdr-main"><div class="mdr-toolbar"><button data-action="print">Print / PDF</button><button data-action="html">Offline HTML</button><button data-action="docx">DOCX</button><button data-action="epub">EPUB</button><button data-action="source">Source</button>${options.onReload ? '<button data-action="reload">Reload</button>' : ''}<button data-action="smaller">A−</button><button data-action="larger">A+</button><button data-action="width">Width</button><button data-action="theme">Theme</button><span class="mdr-path">${escapeHtml(options.sourceUrl ?? '')}</span></div><article class="mdr-article"></article></main>
+      <main class="mdr-main"><div class="mdr-toolbar"><button data-action="print">Print / PDF</button><button data-action="html">Offline HTML</button><button data-action="docx">DOCX</button><button data-action="epub">EPUB</button><button data-action="source">Source</button>${options.onReload ? '<button data-action="reload">Reload</button>' : ''}<button data-action="smaller">A−</button><button data-action="larger">A+</button><button data-action="width">Width</button><button data-action="theme">Theme</button><span class="mdr-path">${escapeHtml(options.sourceLabel ?? options.sourceUrl ?? '')}</span></div><article class="mdr-article"></article></main>
+      <aside class="mdr-toc-sidebar"><div class="mdr-brand">${escapeHtml(options.title ?? 'Markdown Reader')}</div><nav class="mdr-toc">${tocHtml(result.headings)}</nav></aside>
     </div>`;
   const article = host.querySelector<HTMLElement>('.mdr-article')!;
   if (virtual) {
     const virtualResult = await renderVirtualMarkdown(article, markdown);
     host.querySelector('.mdr-toc')!.innerHTML = tocHtml(virtualResult.headings);
   } else article.innerHTML = result.html;
-  decorateLinks(article, options.sourceUrl);
+  await decorateLinks(article, options);
   if (!virtual) await hydrateDiagrams(article);
 
   host.querySelector('[data-action="print"]')?.addEventListener('click', () => window.print());

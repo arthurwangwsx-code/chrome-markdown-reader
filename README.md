@@ -2,7 +2,7 @@
 
 面向本地技术文档的独立 Chrome Markdown 阅读扩展。
 
-> 当前阶段：v0.3.2 修复 Mermaid 11.17+ 下 strict 模式流程图节点文字被安全清洗后消失的问题，并补齐真实技术方案风格的 Flowchart / Sequence Diagram 回归；v0.3.1 的 AI Quality Loop 继续作为统一质量基线。项目以个人学习和公开源码为目标，按“能力优先、可验证、可维护”的方向持续演进。
+> 当前阶段：v0.4.0 把阅读器升级为项目资料工作区：左侧文件树支持 Markdown / 常见文本 / 图片预览，右侧固定 Markdown H1–H6 导航，并把全部自动 Chromium 验证切换到 new-headless；v0.3.2 的 Mermaid strict 兼容修复与 v0.3.1 的 AI Quality Loop 继续作为质量基线。
 
 ## 已实现能力
 
@@ -13,6 +13,8 @@
 - JSON Canvas 原生本地 SVG 渲染，以及 AntV Infographic 按需渲染。
 - 图表缩放、全屏、源码复制、SVG/PNG 导出与单块复杂度预算。
 - File System Access 工作区：目录树、最近工作区恢复、拖放、持久化增量索引，以及完全本地的路径/标题/正文智能排序搜索。
+- 项目文件夹浏览：左侧文件树可预览 Markdown、TXT/LOG/JSON/YAML/CSV/XML 等纯文本和 PNG/JPEG/GIF/WebP/AVIF/BMP 图片；Markdown 的相对图片和相对文档链接在授权目录内解析。
+- 双侧导航：项目文件导航固定在左侧，Markdown H1–H6 标题目录固定在右侧；单文件 Markdown 也统一使用右侧标题目录。
 - 大文档渐进渲染：750 KB 以上按安全边界分块，首屏优先，离屏块进入视口附近时才解析、清洗和挂载。
 - 导出：打印/PDF、单图 SVG/PNG、完整离线 HTML、富文本 DOCX、EPUB 3。
 - 系统/深色/护眼主题、字号和正文宽度控制，宽表格、打印和移动端适配。
@@ -31,6 +33,8 @@ npm run verify
 npm run verify:full
 npm run store:assets
 ```
+
+浏览器自动化验证默认使用 **Chromium new headless**，不会弹出浏览器窗口；需要人工观察调试时可临时使用 `MDR_HEADED=1 npm run test:e2e`。
 
 开发者模式下选择“加载已解压的扩展程序”，指向本仓库的 `dist/`。首次使用本地地址阅读时，在 Chrome 扩展详情中开启“允许访问文件网址”。随后直接打开：
 
@@ -74,6 +78,8 @@ python3 scripts/validate-research.py
 ## 边界
 
 Chrome 的“允许访问文件网址”需要用户开启；文件夹树需要用户主动选择并授权目录。插件不会绕过浏览器或操作系统的权限限制。
+
+工作区可通过“选择文件夹”或直接把 Finder/Explorer 目录拖入页面建立授权。出于浏览器安全模型，插件不会把一个任意的绝对路径字符串直接转换成目录访问权限；用户仍需完成一次目录选择/拖入授权。SVG 等可能携带外部资源语义的独立图片文件暂不作为工作区图片直接预览。
 
 本项目独立于 DevSpace 浏览器控制插件，不申请 debugger、cookies、history 或 nativeMessaging 权限。
 

@@ -23,17 +23,17 @@
 | 工作区 `doctor` | 注册表结构健康；仍有其他工程的治理告警，例如缺少 AGENTS.md，本次未改动无关工程 |
 | `npm run typecheck` | PASS |
 | `npm run lint` | PASS |
-| `npm test` | PASS；Unit/Security 共 15 个测试用例 |
+| `npm test` | PASS；当前 Unit/Security 共 17 个测试用例 |
 | `npm run test:coverage` | PASS；逐文件阈值；当前总体 statements 68.54%、branches 76.92%、functions 63.15%、lines 73.13% |
 | `npm run build` | PASS；Manifest V3 构建成功 |
-| `npm run test:e2e:functional` | PASS 4/4；真实 Chromium 扩展加载、本地 `file://` 多图表、高级图表、HTML/DOCX/EPUB 与大文档虚拟化 |
+| `npm run test:e2e:functional` | PASS 7/7；Chromium new-headless 覆盖扩展加载、混合项目文件夹、左文件/右标题布局、本地 `file://` 多图表、高级图表、HTML/DOCX/EPUB 与大文档虚拟化 |
 | `npm run test:a11y` | PASS 2/2；axe serious/critical 为 0，页面内键盘 Tab 顺序通过 |
 | `npm run test:visual` | PASS 1/1；固定 1280×900 阅读器视觉基线 |
 | `npm audit` | 0 vulnerabilities |
-| `npm run test:performance` | PASS；最终 full verify 中位数：1MB article 约 1.03s、11MB 约 1.91s、100 Mermaid settled 约 2.12s |
+| `npm run test:performance` | PASS；v0.4.0 headless full verify 中位数：1MB article 约 0.38s、11MB 约 1.90s、100 Mermaid settled 约 2.10s |
 | `npm run check:release` | PASS；Manifest、版本、权限与发行包泄漏检查通过 |
 | `npm run verify:full` | PASS；12 个质量步骤全部通过并输出 `quality/quality-report.json` |
-| `npm run package` | PASS；正式 v0.3.1 ZIP SHA-256 `d9a2725c3c8ab1a9d0b06a99ff1a77621270ba92c759e21668b826ab63df8385` |
+| `npm run package` | PASS；v0.4.0 ZIP SHA-256 `55b09fd49e03c57b38395f0736fe1762b6e2b349db76631e11e801964c5821ce` |
 | GitHub CI | PASS：run `34761122024`；Windows / Ubuntu / macOS 的 Typecheck/Lint/Coverage/Build/Package/Release Check/Audit 全部成功，Chromium 功能 E2E、Accessibility、Visual Regression、Performance Gate 全部成功 |
 | GitHub Release | v0.3.1 已正式发布：`https://github.com/arthurwangwsx-code/chrome-markdown-reader/releases/tag/v0.3.1`，包含 Chrome ZIP 与 SHA-256 |
 
@@ -46,6 +46,14 @@
 - `npm run verify` PASS：typecheck、lint、coverage、安全、6 个 Chromium 功能 E2E、Accessibility、Visual、打包、Release check、audit 全部通过。
 - 性能专项中 100 Mermaid 中位数约 186 ms 正文可见 / 2.14 s settled，仍在预算内；当前机器 11 MB 纯文本 benchmark 受运行环境影响出现约 11.5 s 的单项超预算，因此未修改性能门槛。
 
+### v0.4.0 本地发布验证
+
+- 文件夹工作区支持 Markdown、常见纯文本与栅格图片预览；左侧固定项目文件树，右侧固定 Markdown H1–H6 标题导航。
+- Markdown 相对图片和相对文档链接通过已授权 DirectoryHandle 解析，路径不能越过工作区根目录。
+- 所有自动 Chromium 验证默认切换为 `channel: chromium` + new-headless；功能 E2E、Accessibility、Visual、Performance benchmark 和商店截图脚本不再默认打开 GUI 浏览器。
+- `npm run verify:full` PASS；性能门禁 PASS；Release check PASS；0 个高危依赖漏洞。
+- v0.4.0 本地发行包 SHA-256：`55b09fd49e03c57b38395f0736fe1762b6e2b349db76631e11e801964c5821ce`。
+
 ## 尚未执行 / 非当前阻塞项
 
 - 首次 Chrome Web Store item 尚未创建。V2 API 不支持创建新 item，且当前本机/GitHub 尚无 CWS OAuth、Publisher ID 与 Extension ID；代码侧 V2 上传/状态/提交审核 workflow 已完成。
@@ -56,6 +64,6 @@
 
 ## 下一阶段的直接入口
 
-当前核心、第二阶段和第三阶段代码链路均已通过并发布；v0.3.1 已把质量验证固化为 AI 可执行闭环。Web Store 真正上架只剩官方要求的一次性 Dashboard item/OAuth 外部配置；仓库侧上传、状态查询和提交审核自动化已就绪。
+当前核心阅读、项目工作区、双侧导航和 headless 质量链路均已通过本地完整门禁。Web Store 真正上架只剩官方要求的一次性 Dashboard item/OAuth 外部配置；仓库侧上传、状态查询和提交审核自动化已就绪。
 
 本轮目标已明确为最终公开源码，因此实现与文档将整理为 Git 提交并进入公有仓库。

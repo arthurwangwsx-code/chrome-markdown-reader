@@ -5,7 +5,11 @@ import { pathToFileURL } from 'node:url';
 
 const out = path.resolve('store-assets'); await mkdir(out, { recursive: true });
 const extensionPath = path.resolve('dist');
-const context = await chromium.launchPersistentContext('', { headless: false, args: [`--disable-extensions-except=${extensionPath}`, `--load-extension=${extensionPath}`] });
+const context = await chromium.launchPersistentContext('', {
+  channel: 'chromium',
+  headless: process.env.MDR_HEADED !== '1',
+  args: [`--disable-extensions-except=${extensionPath}`, `--load-extension=${extensionPath}`],
+});
 try {
   const page = await context.newPage(); await page.setViewportSize({ width: 1280, height: 800 });
   await page.emulateMedia({ colorScheme: 'light', reducedMotion: 'reduce' });

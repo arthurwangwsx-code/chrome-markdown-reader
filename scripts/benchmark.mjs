@@ -7,7 +7,8 @@ import { pathToFileURL } from 'node:url';
 const extensionPath = path.resolve('dist');
 const temp = await mkdtemp(path.join(tmpdir(), 'mdr-bench-'));
 const context = await chromium.launchPersistentContext('', {
-  headless: false,
+  channel: 'chromium',
+  headless: process.env.MDR_HEADED !== '1',
   args: [`--disable-extensions-except=${extensionPath}`, `--load-extension=${extensionPath}`],
 });
 

@@ -1,16 +1,13 @@
 import AxeBuilder from '@axe-core/playwright';
-import { chromium, expect, test, type BrowserContext } from '@playwright/test';
+import { expect, test, type BrowserContext } from '@playwright/test';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { launchExtensionContext } from './extension-context';
 
 let context: BrowserContext;
 
 test.beforeAll(async () => {
-  const extensionPath = path.resolve('dist');
-  context = await chromium.launchPersistentContext('', {
-    headless: false,
-    args: [`--disable-extensions-except=${extensionPath}`, `--load-extension=${extensionPath}`],
-  });
+  ({ context } = await launchExtensionContext());
 });
 
 test.afterAll(async () => { await context?.close(); });
